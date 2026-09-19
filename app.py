@@ -1,6 +1,8 @@
 import streamlit as st
 import re
 import math
+from gtts import gTTS
+import io
 
 st.set_page_config(page_title="Impossível", page_icon="🤖")
 
@@ -43,16 +45,18 @@ elif st.session_state.idioma == "Español (Espanhol)":
     st.write(f"¡Hola, {st.session_state.user_name}! Soy Impossível, tu asistente inteligente.")
     placeholder_text = "¿Qué le quieres decir a Impossível?"
 elif st.session_state.idioma == "Italiano (Italiano)":
-    st.write(f"Ciao, {st.session_state.user_name}! Sono Impossível, il tuo assistente intelligente.")
-    placeholder_text = "Cosa vuoi dire a Impossível?"
+    st.write(f"Ciao, {st.session_state.user_name}! Sono Impossibile, il tuo assistente inteligente.")
+    placeholder_text = "Cosa vuoi dire a Impossibile?"
 else:
     st.write(f"Olá, {st.session_state.user_name}! Eu sou o Impossível, o teu assistente inteligente.")
     placeholder_text = "O que você quer dizer ao Impossível?"
 
-# --- MOSTRAR O HISTÓRICO DE MENSAGENS (MEMÓRIA) ---
+# --- MOSTRAR O HISTÓRICO DE MENSAGENS (MEMÓRIA COM ÁUDIO) ---
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
+        if message["role"] == "assistant" and message.get("audio"):
+            st.audio(message["audio"], format="audio/mp3")
 
 # --- CAIXA DE TEXTO ---
 if prompt := st.chat_input(placeholder_text):
@@ -105,34 +109,32 @@ if prompt := st.chat_input(placeholder_text):
     if resposta_conteudo:
         response = f"🧮 {st.session_state.user_name}, analisei a tua questão com rigor absoluto!\n\n{resposta_conteudo}"
     
-    # MÓDULO DE PEDIDOS DE EXEMPLOS ("me dê um exemplo de...")
     elif "exemplo" in prompt_lower:
         if "notícia" in prompt_lower or "noticia" in prompt_lower or "news" in prompt_lower:
-            response = f"📰 {st.session_state.user_name}, aqui tens um **exemplo de notícia**:\n\n> *'Curitibanos inaugura nova praça central com foco em sustentabilidade e área de lazer para jovens. O espaço conta com Wi-Fi gratuito e pistas de patins.'*"
+            response = f"📰 {st.session_state.user_name}, aqui tens um **exemplo de notícia**:\n\n> *'Curitibanos inaugura nova praça central com foco em sustentabilidade e área de lazer para jovens.'*"
         elif "poesia" in prompt_lower or "poema" in prompt_lower or "poetry" in prompt_lower:
             response = f"诗 {st.session_state.user_name}, aqui tens um **exemplo de poesia**:\n\n> *'As estrelas brilham no céu de anil,\n> num silêncio profundo e varonil,\n> a mente voa em busca de saber,\n> e o impossível começa a acontecer.'*"
         elif "verbo" in prompt_lower or "verb" in prompt_lower:
-            response = f"📖 {st.session_state.user_name}, aqui tens um **exemplo de frase com verbo**:\n\n> *'O Derick **estuda** matemática com muita dedicação.'* (O verbo é *estuda*, indicando uma ação)."
+            response = f"📖 {st.session_state.user_name}, aqui tens um **exemplo de frase com verbo**:\n\n> *'O Derick **estuda** matemática com muita dedicação.'*"
         elif "advérbio" in prompt_lower or "adverb" in prompt_lower:
-            response = f"📖 {st.session_state.user_name}, aqui tens um **exemplo de frase com advérbio**:\n\n> *'A aplicação funcionou **perfeitamente**.'* (O termo *perfeitamente* é um advérbio de modo)."
+            response = f"📖 {st.session_state.user_name}, aqui tens um **exemplo de frase com advérbio**:\n\n> *'A aplicação funcionou **perfeitamente**.'*"
         elif "raiz" in prompt_lower:
-            response = f"⚡ {st.session_state.user_name}, aqui tens um **exemplo de raiz quadrada**:\n\n> A raiz quadrada de `81` é **9**, pois $9 \times 9 = 81$."
+            response = f"⚡ {st.session_state.user_name}, aqui tens um **exemplo de raiz quadrada**:\n\n> A raiz quadrada de `81` é **9**."
         elif "potência" in prompt_lower or "potencia" in prompt_lower:
-            response = f"⚡ {st.session_state.user_name}, aqui tens um **exemplo de potência**:\n\n> `2` elevado a `3` ($2^3$) é igual a **8** ($2 \times 2 \times 2$)."
+            response = f"⚡ {st.session_state.user_name}, aqui tens um **exemplo de potência**:\n\n> `2` elevado a `3` é igual a **8**."
         else:
-            response = f"💡 {st.session_state.user_name}, aqui tens um **exemplo prático geral**:\n\n> Podes pedir-me cálculos matemáticos (como `23 x 43` ou `raiz quadrada de 45`), definições (como o que é um verbo) ou exemplos específicos de textos e notícias!"
+            response = f"💡 {st.session_state.user_name}, podes pedir-me cálculos, definições ou exemplos específicos de textos e notícias!"
 
-    # MÓDULOS DE DEFINIÇÕES NORMAIS
     elif "verbo" in prompt_lower:
         response = f"📖 {st.session_state.user_name}, o **verbo** é a classe de palavras que indica **ação, estado ou fenómeno da natureza** (ex: *correr*, *ficar*, *chover*)."
     elif "advérbio" in prompt_lower or "adverbio" in prompt_lower:
         response = f"📖 {st.session_state.user_name}, o **advérbio** é a palavra invariável que modifica o verbo, adjetivo ou outro advérbio (ex: *rapidamente*, *ontem*, *muito*)."
     elif "notícia" in prompt_lower or "noticia" in prompt_lower:
-        response = f"📰 {st.session_state.user_name}, uma **notícia** é um género jornalístico que relata um acontecimento real e de interesse público de forma clara e objetiva."
+        response = f"📰 {st.session_state.user_name}, uma **notícia** é um género jornalístico que relata um acontecimento real e de interesse público."
     elif "poesia" in prompt_lower or "poema" in prompt_lower:
-        response = f"诗 {st.session_state.user_name}, a **poesia** é uma manifestação artística que utiliza a palavra em sua dimensão estética e rítmica para evocar emoções."
+        response = f"诗 {st.session_state.user_name}, a **poesia** é uma manifestação artística que utiliza a palavra em sua dimensão estética e rítmica."
     elif "género textual" in prompt_lower or "genero textual" in prompt_lower:
-        response = f"📚 {st.session_state.user_name}, os **géneros textuais** são as diferentes formas e estruturas utilizadas nos textos para a comunicação social (notícias, cartas, poemas, receitas, etc.)."
+        response = f"📚 {st.session_state.user_name}, os **géneros textuais** são as diferentes formas e estruturas utilizadas nos textos para a comunicação social."
     elif "texto" in prompt_lower:
         response = f"📝 {st.session_state.user_name}, um **texto** é um conjunto estruturado de palavras que transmite uma mensagem com sentido completo."
     elif any(word in prompt_lower for word in ["robô", "tecnologia", "computador", "código", "ia", "github"]):
@@ -140,7 +142,33 @@ if prompt := st.chat_input(placeholder_text):
     else:
         response = f"💡 Entendi o que mencionaste sobre '{prompt}', {st.session_state.user_name}. Vamos continuar a evoluir o nosso projeto com máxima dedicação!"
 
-    # Guardar e mostrar a resposta na memória do chat
-    st.session_state.messages.append({"role": "assistant", "content": response})
+    # --- GERAR O ÁUDIO DA RESPOSTA (TTS) ---
+    audio_bytes = None
+    try:
+        lang_code = 'pt'
+        if "English" in st.session_state.idioma:
+            lang_code = 'en'
+        elif "Español" in st.session_state.idioma:
+            lang_code = 'es'
+        elif "Italiano" in st.session_state.idioma:
+            lang_code = 'it'
+            
+        # Limpar símbolos e emojis para o áudio soar limpo
+        texto_para_voz = re.sub(r'[*#>`_]', '', response)
+        
+        tts = gTTS(text=texto_para_voz, lang=lang_code, slow=False)
+        fp = io.BytesIO()
+        tts.write_to_fp(fp)
+        fp.seek(0)
+        audio_bytes = fp.read()
+    except:
+        pass
+
+    # Guardar mensagem e áudio na memória
+    st.session_state.messages.append({"role": "assistant", "content": response, "audio": audio_bytes})
+    
     with st.chat_message("assistant"):
         st.markdown(response)
+        if audio_bytes:
+            st.audio(audio_bytes, format="audio/mp3")
+  
