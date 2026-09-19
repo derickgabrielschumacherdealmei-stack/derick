@@ -9,10 +9,18 @@ while True:
         print("Assistente: Até logo, Derick! Foi ótimo conversar com você.")
         break
         
-    # Verifica o que foi digitado para dar uma resposta inteligente
+    # Cumprimento
     elif "olá" in pergunta_usuario.lower():
         print("Assistente: Olá, Derick! Como posso ajudar nos teus estudos ou projetos hoje?")
-    elif "matemática" in pergunta_usuario.lower():
-        print("Assistente: Matemática é excelente! Quer resolver alguma expressão ou equação?")
+        
+    # Deteta se o usuário digitou uma operação matemática (+, -, *, /, **)
+    elif any(op in pergunta_usuario for op in ["+", "-", "*", "/", "**"]):
+        try:
+            # Calcula a expressão matemática digitada
+            resultado = eval(pergunta_usuario)
+            print(f"Assistente: O resultado de {pergunta_usuario} é {resultado}")
+        except:
+            print("Assistente: Hmm, ocorreu um erro ao calcular. Tente digitar a conta usando números e operadores válidos (ex: 5 + 5).")
+            
     else:
         print("Assistente: Entendi o que disseste. Vamos continuar a evoluir este assistente passo a passo!")
