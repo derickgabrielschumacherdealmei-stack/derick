@@ -24,7 +24,7 @@ with st.sidebar:
         st.session_state.user_name = nome_inserido
         st.rerun()
         
-    # Seletor de Idiomas (Português Brasil, Inglês, Espanhol e Italiano)
+    # Seletor de Idiomas
     idioma_escolhido = st.selectbox(
         "🌐 Idioma da IA", 
         ["Português (Brasil)", "English (Inglês)", "Español (Espanhol)", "Italiano (Italiano)"]
@@ -101,42 +101,44 @@ if prompt := st.chat_input(placeholder_text):
     except:
         pass
 
-    # --- RESPOSTAS COM TRADUÇÃO DINÂMICA CONSOANTE O IDIOMA ---
+    # --- RESPOSTAS INTELIGENTES E PEDIDOS DE EXEMPLOS ---
     if resposta_conteudo:
         response = f"🧮 {st.session_state.user_name}, analisei a tua questão com rigor absoluto!\n\n{resposta_conteudo}"
     
-    elif "verbo" in prompt_lower or "verb" in prompt_lower or "verbo" in prompt_lower:
-        if st.session_state.idioma == "English (Inglês)":
-            response = f"📖 {st.session_state.user_name}, a **verb** is a word that expresses an action, state, or nature phenomenon (e.g., *run*, *be*, *rain*)."
-        elif st.session_state.idioma == "Español (Espanhol)":
-            response = f"📖 {st.session_state.user_name}, un **verbo** es la clase de palabra que indica acción, estado o proceso (ej: *correr*, *ser*, *llover*)."
-        elif st.session_state.idioma == "Italiano (Italiano)":
-            response = f"📖 {st.session_state.user_name}, un **verbo** è una parola che indica un'azione, uno stato o un evento (es. *correre*, *essere*)."
+    # MÓDULO DE PEDIDOS DE EXEMPLOS ("me dê um exemplo de...")
+    elif "exemplo" in prompt_lower:
+        if "notícia" in prompt_lower or "noticia" in prompt_lower or "news" in prompt_lower:
+            response = f"📰 {st.session_state.user_name}, aqui tens um **exemplo de notícia**:\n\n> *'Curitibanos inaugura nova praça central com foco em sustentabilidade e área de lazer para jovens. O espaço conta com Wi-Fi gratuito e pistas de patins.'*"
+        elif "poesia" in prompt_lower or "poema" in prompt_lower or "poetry" in prompt_lower:
+            response = f"诗 {st.session_state.user_name}, aqui tens um **exemplo de poesia**:\n\n> *'As estrelas brilham no céu de anil,\n> num silêncio profundo e varonil,\n> a mente voa em busca de saber,\n> e o impossível começa a acontecer.'*"
+        elif "verbo" in prompt_lower or "verb" in prompt_lower:
+            response = f"📖 {st.session_state.user_name}, aqui tens um **exemplo de frase com verbo**:\n\n> *'O Derick **estuda** matemática com muita dedicação.'* (O verbo é *estuda*, indicando uma ação)."
+        elif "advérbio" in prompt_lower or "adverb" in prompt_lower:
+            response = f"📖 {st.session_state.user_name}, aqui tens um **exemplo de frase com advérbio**:\n\n> *'A aplicação funcionou **perfeitamente**.'* (O termo *perfeitamente* é um advérbio de modo)."
+        elif "raiz" in prompt_lower:
+            response = f"⚡ {st.session_state.user_name}, aqui tens um **exemplo de raiz quadrada**:\n\n> A raiz quadrada de `81` é **9**, pois $9 \times 9 = 81$."
+        elif "potência" in prompt_lower or "potencia" in prompt_lower:
+            response = f"⚡ {st.session_state.user_name}, aqui tens um **exemplo de potência**:\n\n> `2` elevado a `3` ($2^3$) é igual a **8** ($2 \times 2 \times 2$)."
         else:
-            response = f"📖 {st.session_state.user_name}, o **verbo** é a classe de palavras que indica **ação, estado ou fenómeno da natureza** (ex: *correr*, *ficar*, *chover*)."
-            
-    elif "advérbio" in prompt_lower or "adverb" in prompt_lower or "adverbio" in prompt_lower:
-        if st.session_state.idioma == "English (Inglês)":
-            response = f"📖 {st.session_state.user_name}, an **adverb** modifies a verb, adjective, or another adverb, indicating circumstances like time, place, or manner."
-        else:
-            response = f"📖 {st.session_state.user_name}, o **advérbio** é a palavra invariável que modifica o verbo, adjetivo ou outro advérbio (ex: *rapidamente*, *ontem*, *muito*)."
-            
-    elif "notícia" in prompt_lower or "news" in prompt_lower or "noticia" in prompt_lower:
-        if st.session_state.idioma == "English (Inglês)":
-            response = f"📰 {st.session_state.user_name}, **news** is an informative journalistic text genre aiming to report a real and current public event."
-        else:
-            response = f"📰 {st.session_state.user_name}, uma **notícia** é um género jornalístico que relata um acontecimento real e de interesse público."
-            
-    elif "poesia" in prompt_lower or "poetry" in prompt_lower or "poesia" in prompt_lower:
-        if st.session_state.idioma == "English (Inglês)":
-            response = f"诗 {st.session_state.user_name}, **poetry** is an artistic and literary expression using rhythmic and symbolic language to evoke emotions."
-        else:
-            response = f"诗 {st.session_state.user_name}, a **poesia** é uma manifestação artística que utiliza a palavra em sua dimensão estética e rítmica."
-            
-    elif any(word in prompt_lower for word in ["robô", "tecnologia", "computer", "technology", "tecnología", "computer"]):
-        response = f"🤖 {st.session_state.user_name}, os sistemas processam dados com total exatidão!"
+            response = f"💡 {st.session_state.user_name}, aqui tens um **exemplo prático geral**:\n\n> Podes pedir-me cálculos matemáticos (como `23 x 43` ou `raiz quadrada de 45`), definições (como o que é um verbo) ou exemplos específicos de textos e notícias!"
+
+    # MÓDULOS DE DEFINIÇÕES NORMAIS
+    elif "verbo" in prompt_lower:
+        response = f"📖 {st.session_state.user_name}, o **verbo** é a classe de palavras que indica **ação, estado ou fenómeno da natureza** (ex: *correr*, *ficar*, *chover*)."
+    elif "advérbio" in prompt_lower or "adverbio" in prompt_lower:
+        response = f"📖 {st.session_state.user_name}, o **advérbio** é a palavra invariável que modifica o verbo, adjetivo ou outro advérbio (ex: *rapidamente*, *ontem*, *muito*)."
+    elif "notícia" in prompt_lower or "noticia" in prompt_lower:
+        response = f"📰 {st.session_state.user_name}, uma **notícia** é um género jornalístico que relata um acontecimento real e de interesse público de forma clara e objetiva."
+    elif "poesia" in prompt_lower or "poema" in prompt_lower:
+        response = f"诗 {st.session_state.user_name}, a **poesia** é uma manifestação artística que utiliza a palavra em sua dimensão estética e rítmica para evocar emoções."
+    elif "género textual" in prompt_lower or "genero textual" in prompt_lower:
+        response = f"📚 {st.session_state.user_name}, os **géneros textuais** são as diferentes formas e estruturas utilizadas nos textos para a comunicação social (notícias, cartas, poemas, receitas, etc.)."
+    elif "texto" in prompt_lower:
+        response = f"📝 {st.session_state.user_name}, um **texto** é um conjunto estruturado de palavras que transmite uma mensagem com sentido completo."
+    elif any(word in prompt_lower for word in ["robô", "tecnologia", "computador", "código", "ia", "github"]):
+        response = f"🤖 Compreendi o teu apontamento tecnológico, {st.session_state.user_name}. Os sistemas processam dados com total exatidão!"
     else:
-        response = f"💡 Entendi o que mencionaste, {st.session_state.user_name}. Vamos continuar a evoluir o nosso projeto!"
+        response = f"💡 Entendi o que mencionaste sobre '{prompt}', {st.session_state.user_name}. Vamos continuar a evoluir o nosso projeto com máxima dedicação!"
 
     # Guardar e mostrar a resposta na memória do chat
     st.session_state.messages.append({"role": "assistant", "content": response})
