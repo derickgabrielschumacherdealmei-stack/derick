@@ -1,32 +1,29 @@
-print("Bem-vindo ao assistente de IA do Derick!")
-print("Digite 'sair' a qualquer momento para encerrar a conversa.\n")
-
-while True:
-    pergunta_usuario = input("Você: ")
+def assistente_impossivel():
+    print("Assistente Impossível iniciado...")
     
-    # Condição para encerrar o programa
-    if "sair" in pergunta_usuario.lower():
-        print("Assistente: Até logo, Derick! Foi ótimo conversar com você.")
-        break
+    while True:
+        entrada_usuario = input("Tu: ").strip().lower()
         
-    # Cumprimento
-    elif "olá" in pergunta_usuario.lower():
-        print("Assistente: Olá, Derick! Como posso ajudar nos teus estudos ou projetos hoje?")
-        
-    # Explicações de Português
-    elif "verbo" in pergunta_usuario.lower():
-        print("Assistente: Um verbo é a palavra que indica ação, estado ou fenômeno da natureza (ex: correr, ser, chover).")
-    elif "advérbio" in pergunta_usuario.lower():
-        print("Assistente: Um advérbio é a palavra que modifica o sentido de um verbo, de um adjetivo ou de outro advérbio, indicando circunstâncias como tempo, modo ou lugar (ex: rapidamente, aqui, ontem).")
-        
-    # Deteta se o usuário digitou uma operação matemática (+, -, *, /, **)
-    elif any(op in pergunta_usuario for op in ["+", "-", "*", "/", "**"]):
-        try:
-            # Calcula a expressão matemática digitada
-            resultado = eval(pergunta_usuario)
-            print(f"Assistente: O resultado de {pergunta_usuario} é {resultado}")
-        except:
-            print("Assistente: Hmm, ocorreu um erro ao calcular. Tente digitar a conta usando números e operadores válidos (ex: 5 + 5).")
+        # Condição para sair do chat
+        if entrada_usuario in ["sair", "fechar", "exit"]:
+            print("Impossível: Até logo! Continuação de um bom trabalho.")
+            break
             
-    else:
-        print("Assistente: Entendi o que disseste. Vamos continuar a evoluir este assistente passo a passo!")
+        # Cumprimentos personalizados
+        elif entrada_usuario in ["olá", "ola", "oi", "opa", "e aí", "e ai"]:
+            print("Impossível: Olá, eu sou a Impossível. O que posso te ajudar hoje?")
+            
+        # Detetar cálculos matemáticos simples
+        elif any(op in entrada_usuario for op in ["+", "-", "*", "/"]):
+            try:
+                # Remove espaços e calcula a expressão matemática de forma segura
+                resultado = eval(entrada_usuario)
+                print(f"Impossível: O resultado da conta é {resultado}")
+            except Exception:
+                print("Impossível: Hum, vi que tentaste fazer uma conta, mas não consegui calcular bem. Podes escrever de outra forma?")
+            
+        else:
+            print("Impossível: Entendi o que disseste, vamos continuar a melhorar a nossa IA!")
+
+# Para correr a função
+if __name__ == "__main__"
