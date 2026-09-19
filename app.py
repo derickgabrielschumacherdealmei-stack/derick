@@ -28,22 +28,17 @@ if prompt := st.chat_input("O que você quer dizer ao Impossível?"):
     resposta_matematica = None
     
     try:
-        # Limpar o texto para extrair expressões matemáticas
+        # Limpar o texto básico da pergunta
         limpo = prompt_lower.replace("quanto é", "").replace("quanto vale", "").replace("calcule", "").replace("=", "").strip()
         
-        # Se contiver termos ou símbolos de multiplicação
-        if any(op in limpo for op in ["*", "×", "vezes", "multiplicado por", "multiplicar"]):
-            # Normalizar os operadores para o Python conseguir calcular
-            expressao = limpo.replace("vezes", "*").replace("×", "*").replace("multiplicado por", "*")
-            # Extrair apenas números, operadores e pontos necessários
-            expressao_limpa = "".join([c for c in expressao if c in "0123456789+-*/(). "])
-            if expressao_limpa.strip() and "*" in expressao_limpa:
-                resultado = eval(expressao_limpa)
-                resposta_matematica = f"O produto exato de `{expressao_limpa.strip()}` é **{resultado}**."
+        # Substituir símbolos de multiplicação comuns (incluindo a letra 'x' e 'X') por '*'
+        # Usamos espaços à volta para garantir que não substitui letras dentro de palavras
+        expressao = limpo.replace("vezes", "*").replace("×", "*").replace("multiplicado por", "*")
+        expressao = re.sub(r'\bex\b|\bx\b', '*', expressao) # substitui a letra x isolada por *
         
-        # Outras operações básicas caso sejam inseridas
-        elif any(op in limpo for op in ["+", "-", "/"]):
-            expressao = limpo.replace("mais", "+").replace("menos", "-").replace("dividido por", "/")
+        # Se contiver operadores matemáticos conhecidos
+        if any(op in expressao for op in ["+", "-", "*", "/"]):
+            # Extrair apenas números, operadores e pontos necessários para o cálculo
             expressao_limpa = "".join([c for c in expressao if c in "0123456789+-*/(). "])
             if expressao_limpa.strip():
                 resultado = eval(expressao_limpa)
@@ -53,8 +48,8 @@ if prompt := st.chat_input("O que você quer dizer ao Impossível?"):
 
     # Lógica de resposta estruturada
     if resposta_matematica:
-        emoji = "✖️" if "*" in prompt_lower or "vezes" in prompt_lower or "×" in prompt_lower else "🧮"
-        response = f"{emoji} Analisei a tua conta com rigor absoluto!\n\n{resposta_matematica}\n\n* **Conceito:** A multiplicação consiste na soma abreviada de parcelas idênticas que se repetem sucessivamente."
+        emoji = "✖️" if "*" in prompt_lower or "x" in prompt_lower or "×" in prompt_lower or "vezes" in prompt_lower else "🧮"
+        response = f"{emoji} Analisei a tua conta com rigor absoluto!\n\n{resposta_matematica}\n\n* **Conceito:** O cálculo foi processado e validado matematicamente com sucesso."
     elif any(op in prompt_lower for op in ["potência", "potenciacao", "elevado", "^"]):
         emoji = "⚡"
         response = f"⚡ Analisei a tua questão sobre **potenciação**. A base é multiplicada por si mesma conforme o expoente."
