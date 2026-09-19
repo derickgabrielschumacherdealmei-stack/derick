@@ -24,19 +24,26 @@ if prompt := st.chat_input("O que você quer dizer ao Impossível?"):
 
     prompt_lower = prompt.lower()
     
-    # Tentar detetar operações matemáticas simples com números na frase (ex: 2 + 2)
+    # Tentar detetar operações matemáticas e calcular o resultado exato
     resposta_matematica = None
     
     try:
-        # Limpar o texto para extrair expressões matemáticas básicas
-        # Procura por padrões como X + Y, X - Y, etc.
-        limpo = prompt.replace("quanto é", "").replace("quanto vale", "").replace("=", "").strip()
+        # Limpar o texto para extrair expressões matemáticas
+        limpo = prompt_lower.replace("quanto é", "").replace("quanto vale", "").replace("calcule", "").replace("=", "").strip()
         
-        # Se contiver operadores e números, tenta calcular com segurança
-        if any(op in limpo for op in ["+", "-", "*", "×", "/", "dividido", "vezes", "mais", "menos"]):
-            # Substituições amigáveis para cálculo
-            expressao = limpo.replace("mais", "+").replace("menos", "-").replace("vezes", "*").replace("×", "*").replace("dividido por", "/").replace("dividir", "/")
-            # Manter apenas números, operadores e pontos/espaços
+        # Se contiver termos ou símbolos de multiplicação
+        if any(op in limpo for op in ["*", "×", "vezes", "multiplicado por", "multiplicar"]):
+            # Normalizar os operadores para o Python conseguir calcular
+            expressao = limpo.replace("vezes", "*").replace("×", "*").replace("multiplicado por", "*")
+            # Extrair apenas números, operadores e pontos necessários
+            expressao_limpa = "".join([c for c in expressao if c in "0123456789+-*/(). "])
+            if expressao_limpa.strip() and "*" in expressao_limpa:
+                resultado = eval(expressao_limpa)
+                resposta_matematica = f"O produto exato de `{expressao_limpa.strip()}` é **{resultado}**."
+        
+        # Outras operações básicas caso sejam inseridas
+        elif any(op in limpo for op in ["+", "-", "/"]):
+            expressao = limpo.replace("mais", "+").replace("menos", "-").replace("dividido por", "/")
             expressao_limpa = "".join([c for c in expressao if c in "0123456789+-*/(). "])
             if expressao_limpa.strip():
                 resultado = eval(expressao_limpa)
@@ -44,31 +51,28 @@ if prompt := st.chat_input("O que você quer dizer ao Impossível?"):
     except:
         pass
 
-    # Lógica de resposta
+    # Lógica de resposta estruturada
     if resposta_matematica:
-        emoji = "🧮"
-        response = f"{emoji} Analisei a tua conta com precisão absoluta!\n\n{resposta_matematica}\n\n* **Conceito:** Cada operação matemática processa os valores introduzidos de forma rigorosa para garantir um resultado correto."
+        emoji = "✖️" if "*" in prompt_lower or "vezes" in prompt_lower or "×" in prompt_lower else "🧮"
+        response = f"{emoji} Analisei a tua conta com rigor absoluto!\n\n{resposta_matematica}\n\n* **Conceito:** A multiplicação consiste na soma abreviada de parcelas idênticas que se repetem sucessivamente."
     elif any(op in prompt_lower for op in ["potência", "potenciacao", "elevado", "^"]):
         emoji = "⚡"
-        response = f"⚡ Analisei a tua questão sobre **potenciação** acerca de '{prompt}'. A potenciação multiplica a base por si mesma com base no expoente. Por exemplo, $2^3 = 2 \\times 2 \\times 2 = 8$."
+        response = f"⚡ Analisei a tua questão sobre **potenciação**. A base é multiplicada por si mesma conforme o expoente."
     elif any(op in prompt_lower for op in ["mais", "adicionar", "soma", "+"]):
         emoji = "➕"
-        response = f"➕ Analisei a tua operação de **adição**. Na adição, juntamos parcelas para obter o total. Por exemplo, $2 + 2 = 4$."
+        response = f"➕ Analisei a tua operação de **adição**. Juntamos as parcelas para encontrar o total exato."
     elif any(op in prompt_lower for op in ["menos", "subtrair", "diferença", "-"]):
         emoji = "➖"
-        response = f"➖ Analisei a tua operação de **subtração**. Calculamos a diferença entre os valores introduzidos."
-    elif any(op in prompt_lower for op in ["vezes", "multiplicar", "produto", "*", "×"]):
-        emoji = "✖️"
-        response = f"✖️ Analisei a tua operação de **multiplicação**. Somamos parcelas idênticas repetidamente."
+        response = f"➖ Analisei a tua operação de **subtração**. Calculamos a diferença entre os valores."
     elif any(op in prompt_lower for op in ["dividir", "divisão", "/"]):
         emoji = "➗"
-        response = f"➗ Analisei a tua operação de **divisão**. Repartimos o valor em partes iguais."
+        response = f"➗ Analisei a tua operação de **divisão**. Repartimos a quantidade em partes iguais."
     elif any(word in prompt_lower for word in ["robô", "tecnologia", "computador", "código", "ia", "github"]):
         emoji = "🤖"
-        response = f"🤖 Compreendi o teu apontamento tecnológico sobre '{prompt}'. Os sistemas processam dados com extrema rapidez!"
+        response = f"🤖 Compreendi o teu apontamento tecnológico. Os sistemas processam dados com total exatidão!"
     else:
         emoji = "💡"
-        response = f"💡 Entendi o que mencionaste sobre '{prompt}'. Vamos continuar a evoluir o nosso projeto com total dedicação!"
+        response = f"💡 Entendi o que mencionaste sobre '{prompt}'. Vamos continuar a evoluir o nosso projeto com máxima dedicação!"
 
     # Guardar e mostrar a resposta do assistente
     st.session_state.messages.append({"role": "assistant", "content": response})
