@@ -1,174 +1,52 @@
 import streamlit as st
-import re
-import math
-from gtts import gTTS
-import io
 
-st.set_page_config(page_title="Impossível", page_icon="🤖")
+# --- MENU DE DEFINIÇÕES E IDIOMAS ---
+st.sidebar.title("⚙️ Definições da IA")
 
-# --- GESTÃO DE ESTADO E MEMÓRIA ---
-if "user_name" not in st.session_state:
-    st.session_state.user_name = "Derick"
+# Secção de Idioma e Nome
+idioma = st.sidebar.selectbox("Idioma", ["Português (Brasil)", "Português (Portugal)", "Inglês"])
+nome_ia = st.sidebar.text_input("Nome da IA", value="Impossível")
 
-if "idioma" not in st.session_state:
-    st.session_state.idioma = "Português (Brasil)"
+st.sidebar.markdown("---")
+st.sidebar.subheader("🎙️ Mudar Estilo de Voz")
 
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+# Opção para abrir o painel avançado de voz
+ativar_painel_voz = st.sidebar.checkbox("Ativar painel avançado de vozes")
 
-# --- BARRA LATERAL (DEFINIÇÕES) ---
-with st.sidebar:
-    st.header("⚙️ Definições")
+if ativar_painel_voz:
+    # Criar duas colunas na barra lateral para organizar as opções
+    col1, col2 = st.sidebar.columns(2)
     
-    # Alterar o nome de quem está a usar
-    nome_inserido = st.text_input("Quem está a usar?", value=st.session_state.user_name)
-    if nome_inserido != st.session_state.user_name:
-        st.session_state.user_name = nome_inserido
-        st.rerun()
+    with col1:
+        st.markdown("**Feminino**")
+        voz_fem = st.radio(
+            "Escolha Feminina:",
+            ["Padrão", "Gaúcha (Feminina)", "Mineira (Feminina)", "Carioca (Feminina)"],
+            key="radio_fem"
+        )
         
-    # Seletor de Idiomas
-    idioma_escolhido = st.selectbox(
-        "🌐 Idioma da IA", 
-        ["Português (Brasil)", "English (Inglês)", "Español (Espanhol)", "Italiano (Italiano)"]
+    with col2:
+        st.markdown("**Masculino**")
+        voz_masc = st.radio(
+            "Escolha Masculina:",
+            ["Padrão", "Gaúcho (Masculino)", "Mineiro (Masculino)", "Carioca (Masculino)"],
+            key="radio_masc"
+        )
+
+    st.markdown("---")
+    st.markdown("**Textura e Estilo da Voz**")
+    
+    estilo_voz = st.selectbox(
+        "Como quer que a voz soe?",
+        [
+            "Natural e Humana", 
+            "Confortável e Agradável", 
+            "Voz mais grossa / grave", 
+            "Voz mais fina / aguda"
+        ]
     )
-    if idioma_escolhido != st.session_state.idioma:
-        st.session_state.idioma = idioma_escolhido
-        st.rerun()
 
-# --- TÍTULO E BOAS-VINDAS CONSOANTE O IDIOMA ---
-st.title("🤖 Impossível")
-
-if st.session_state.idioma == "English (Inglês)":
-    st.write(f"Hello, {st.session_state.user_name}! I am Impossível, your intelligent assistant.")
-    placeholder_text = "What do you want to say to Impossível?"
-elif st.session_state.idioma == "Español (Espanhol)":
-    st.write(f"¡Hola, {st.session_state.user_name}! Soy Impossível, tu asistente inteligente.")
-    placeholder_text = "¿Qué le quieres decir a Impossível?"
-elif st.session_state.idioma == "Italiano (Italiano)":
-    st.write(f"Ciao, {st.session_state.user_name}! Sono Impossibile, il tuo assistente inteligente.")
-    placeholder_text = "Cosa vuoi dire a Impossibile?"
-else:
-    st.write(f"Olá, {st.session_state.user_name}! Eu sou o Impossível, o teu assistente inteligente.")
-    placeholder_text = "O que você quer dizer ao Impossível?"
-
-# --- MOSTRAR O HISTÓRICO DE MENSAGENS (MEMÓRIA COM ÁUDIO) ---
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-        if message["role"] == "assistant" and message.get("audio"):
-            st.audio(message["audio"], format="audio/mp3")
-
-# --- CAIXA DE TEXTO ---
-if prompt := st.chat_input(placeholder_text):
-    # Guardar e mostrar a mensagem do utilizador
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
-
-    prompt_lower = prompt.lower()
-    resposta_conteudo = None
-    
-    try:
-        limpo = prompt_lower.replace("quanto é", "").replace("quanto vale", "").replace("calcule", "").replace("=", "").strip()
-        
-        # 1. Deteção de Raízes
-        if "raiz" in limpo or "root" in limpo or "radice" in limpo:
-            numeros_encontrados = re.findall(r'\d+', limpo)
-            if numeros_encontrados:
-                num = float(numeros_encontrados[0])
-                if "cubica" in limpo or "cúbica" in limpo or "cubic" in limpo:
-                    resultado = num ** (1/3)
-                    resposta_conteudo = f"A raiz cúbica de `{num}` é aproximadamente **{resultado:.4f}**."
-                else:
-                    resultado = math.sqrt(num)
-                    resposta_conteudo = f"A raiz quadrada de `{num}` é **{resultado}**."
-        
-        # 2. Deteção de Potências
-        elif "^" in limpo or "elevado" in limpo or "potência" in limpo or "power" in limpo or "potenza" in limpo:
-            expressao = limpo.replace("elevado a", "**").replace("elevado", "**").replace("^", "**").replace("power", "**")
-            expressao_limpa = "".join([c for c in expressao if c in "0123456789*(). "])
-            if "**" in expressao_limpa:
-                resultado = eval(expressao_limpa)
-                resposta_conteudo = f"O resultado da potência `{expressao_limpa.strip()}` é **{resultado}**."
-        
-        # 3. Operações Matemáticas Básicas
-        else:
-            expressao = limpo.replace("vezes", "*").replace("×", "*").replace("multiplicado por", "*").replace("times", "*").replace("per", "*")
-            expressao = re.sub(r'\bex\b|\bx\b', '*', expressao)
-            expressao = expressao.replace("mais", "+").replace("menos", "-").replace("dividido por", "/").replace("plus", "+").replace("minus", "-")
-            
-            if any(op in expressao for op in ["+", "-", "*", "/"]):
-                expressao_limpa = "".join([c for c in expressao if c in "0123456789+-*/(). "])
-                if expressao_limpa.strip():
-                    resultado = eval(expressao_limpa)
-                    resposta_conteudo = f"O resultado exato de `{expressao_limpa.strip()}` é **{resultado}**."
-    except:
-        pass
-
-    # --- RESPOSTAS INTELIGENTES E PEDIDOS DE EXEMPLOS ---
-    if resposta_conteudo:
-        response = f"🧮 {st.session_state.user_name}, analisei a tua questão com rigor absoluto!\n\n{resposta_conteudo}"
-    
-    elif "exemplo" in prompt_lower:
-        if "notícia" in prompt_lower or "noticia" in prompt_lower or "news" in prompt_lower:
-            response = f"📰 {st.session_state.user_name}, aqui tens um **exemplo de notícia**:\n\n> *'Curitibanos inaugura nova praça central com foco em sustentabilidade e área de lazer para jovens.'*"
-        elif "poesia" in prompt_lower or "poema" in prompt_lower or "poetry" in prompt_lower:
-            response = f"诗 {st.session_state.user_name}, aqui tens um **exemplo de poesia**:\n\n> *'As estrelas brilham no céu de anil,\n> num silêncio profundo e varonil,\n> a mente voa em busca de saber,\n> e o impossível começa a acontecer.'*"
-        elif "verbo" in prompt_lower or "verb" in prompt_lower:
-            response = f"📖 {st.session_state.user_name}, aqui tens um **exemplo de frase com verbo**:\n\n> *'O Derick **estuda** matemática com muita dedicação.'*"
-        elif "advérbio" in prompt_lower or "adverb" in prompt_lower:
-            response = f"📖 {st.session_state.user_name}, aqui tens um **exemplo de frase com advérbio**:\n\n> *'A aplicação funcionou **perfeitamente**.'*"
-        elif "raiz" in prompt_lower:
-            response = f"⚡ {st.session_state.user_name}, aqui tens um **exemplo de raiz quadrada**:\n\n> A raiz quadrada de `81` é **9**."
-        elif "potência" in prompt_lower or "potencia" in prompt_lower:
-            response = f"⚡ {st.session_state.user_name}, aqui tens um **exemplo de potência**:\n\n> `2` elevado a `3` é igual a **8**."
-        else:
-            response = f"💡 {st.session_state.user_name}, podes pedir-me cálculos, definições ou exemplos específicos de textos e notícias!"
-
-    elif "verbo" in prompt_lower:
-        response = f"📖 {st.session_state.user_name}, o **verbo** é a classe de palavras que indica **ação, estado ou fenómeno da natureza** (ex: *correr*, *ficar*, *chover*)."
-    elif "advérbio" in prompt_lower or "adverbio" in prompt_lower:
-        response = f"📖 {st.session_state.user_name}, o **advérbio** é a palavra invariável que modifica o verbo, adjetivo ou outro advérbio (ex: *rapidamente*, *ontem*, *muito*)."
-    elif "notícia" in prompt_lower or "noticia" in prompt_lower:
-        response = f"📰 {st.session_state.user_name}, uma **notícia** é um género jornalístico que relata um acontecimento real e de interesse público."
-    elif "poesia" in prompt_lower or "poema" in prompt_lower:
-        response = f"诗 {st.session_state.user_name}, a **poesia** é uma manifestação artística que utiliza a palavra em sua dimensão estética e rítmica."
-    elif "género textual" in prompt_lower or "genero textual" in prompt_lower:
-        response = f"📚 {st.session_state.user_name}, os **géneros textuais** são as diferentes formas e estruturas utilizadas nos textos para a comunicação social."
-    elif "texto" in prompt_lower:
-        response = f"📝 {st.session_state.user_name}, um **texto** é um conjunto estruturado de palavras que transmite uma mensagem com sentido completo."
-    elif any(word in prompt_lower for word in ["robô", "tecnologia", "computador", "código", "ia", "github"]):
-        response = f"🤖 Compreendi o teu apontamento tecnológico, {st.session_state.user_name}. Os sistemas processam dados com total exatidão!"
-    else:
-        response = f"💡 Entendi o que mencionaste sobre '{prompt}', {st.session_state.user_name}. Vamos continuar a evoluir o nosso projeto com máxima dedicação!"
-
-    # --- GERAR O ÁUDIO DA RESPOSTA (TTS) ---
-    audio_bytes = None
-    try:
-        lang_code = 'pt'
-        if "English" in st.session_state.idioma:
-            lang_code = 'en'
-        elif "Español" in st.session_state.idioma:
-            lang_code = 'es'
-        elif "Italiano" in st.session_state.idioma:
-            lang_code = 'it'
-            
-        # Limpar símbolos e emojis para o áudio soar limpo
-        texto_para_voz = re.sub(r'[*#>`_]', '', response)
-        
-        tts = gTTS(text=texto_para_voz, lang=lang_code, slow=False)
-        fp = io.BytesIO()
-        tts.write_to_fp(fp)
-        fp.seek(0)
-        audio_bytes = fp.read()
-    except:
-        pass
-
-    # Guardar mensagem e áudio na memória
-    st.session_state.messages.append({"role": "assistant", "content": response, "audio": audio_bytes})
-    
-    with st.chat_message("assistant"):
-        st.markdown(response)
-        if audio_bytes:
-            st.audio(audio_bytes, format="audio/mp3")
-  
+    # Botão para aplicar as configurações
+    if st.button("Aplicar Configurações de Voz"):
+        st.success(f"Configuração aplicada! A IA {nome_ia} vai falar com estilo selecionado.")
+   
