@@ -9,17 +9,16 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- O CÓDIGO MAIS PODEROSO DE FORÇAGEM DE FUNDO ESCURO ---
+# --- ESTILO VISUAL OTIMIZADO ---
 st.markdown("""
 <style>
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* Força fundo preto absoluto em toda a aplicação e root do Streamlit */
-    .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
-        background-color: #0b0b0b !important;
-        color: #ffffff !important;
+    .stApp {
+        background-color: #0b0b0b;
+        color: #ffffff;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     
@@ -28,19 +27,7 @@ st.markdown("""
         border-right: 1px solid #1f1f1f;
     }
     
-    /* --- ANULAÇÃO TOTAL DA FAIXA BRANCA DO CHAT --- */
-    
-    /* Força a área principal e o fundo do bloco de chat a assumirem preto profundo */
-    [data-testid="stChatInputContainer"], 
-    div.stChatFloatingInputContainer,
-    .stChatFloatingInputContainer,
-    div[class*="stChatInputContainer"],
-    section.main,
-    .block-container {
-        background-color: #0b0b0b !important;
-    }
-
-    /* Caixa de texto do input com fundo totalmente preto e contorno vermelho */
+    /* Caixa de texto do input */
     .stChatInputContainer input {
         background-color: #000000 !important;
         color: #ffffff !important;
@@ -53,7 +40,7 @@ st.markdown("""
         color: #888888 !important;
     }
 
-    /* Mensagens do Chat com fundo escuro e texto branco */
+    /* Mensagens do Chat */
     .stChatMessage {
         background-color: #141414 !important;
         border: 1px solid #1f1f1f !important;
@@ -136,7 +123,7 @@ st.markdown("""
         line-height: 1.4;
     }
     
-    /* Botões gerais personalizados em vermelho e preto */
+    /* Botões gerais */
     .stButton button {
         background-color: #ff3333 !important;
         color: #000000 !important;
@@ -157,7 +144,7 @@ st.markdown("""
 if "opcao_voz" not in st.session_state:
     st.session_state.opcao_voz = "Brasileiro - Ana"
 
-# --- BARRA LATERAL (ESTILO PAINEL DEDICADO) ---
+# --- BARRA LATERAL ---
 st.sidebar.markdown("<h3 style='color: #ff3333; margin-bottom: 20px;'>⚡ Impossível</h3>", unsafe_allow_html=True)
 st.sidebar.markdown("<p style='color: #666; font-size: 12px; margin-top: -15px;'>Sua IA pessoal, para a vida.</p>", unsafe_allow_html=True)
 
@@ -291,14 +278,14 @@ if prompt := st.chat_input("Digite a sua mensagem para a Impossível..."):
     elif "Mexicano" in opcao_voz:
         lang_code = 'es'
         if any(w in prompt_lower for w in ["hola", "qué tal"]):
-            resposta_ia = "¡Qué onda, güey! ¿Cómo andas? ¿En qué te puedo ayudar?"
+            resposta_ia = "¡Qué onda, güey! ¿Cómo andas? ¿En qué te puedo ajudar?"
         else:
             resposta_ia = f"Sobre '{prompt}', ¡a darle con todo para resolverlo!"
         
     elif "Espanhol" in opcao_voz:
         lang_code = 'es'
         if any(w in prompt_lower for w in ["hola", "qué tal"]):
-            resposta_ia = "¡Hola! ¿Cómo estás? ¿En qué te puedo ayudar hoy?"
+            resposta_ia = "¡Hola! ¿Cómo estás? ¿En qué te puedo ajudar hoy?"
         else:
             resposta_ia = f"Respecto a '{prompt}', esto es lo que te puedo decir."
         
