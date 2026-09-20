@@ -9,7 +9,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- ESTILO CSS PURO (SEM JAVASCRIPT PARA EVITAR ERROS NO REACT) ---
+# --- ESTILO CSS PURO (COMPATÍVEL E ESTÁVEL) ---
 st.markdown("""
 <style>
     #MainMenu {visibility: hidden;}
@@ -146,15 +146,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- GARANTIR O FICHEIRO DE CONFIGURAÇÃO NO GITHUB ---
-# Lembra-te de criar/manter o ficheiro `.streamlit/config.toml` no teu repositório com:
-# [theme]
-# base="dark"
-# primaryColor="#ff2a2a"
-# backgroundColor="#0b0b0b"
-# secondaryBackgroundColor="#121212"
-# textColor="#ffffff"
-
 # --- ESTADO DO SOTAQUE/IDIOMA ---
 if "opcao_voz" not in st.session_state:
     st.session_state.opcao_voz = "Brasileiro - Ana"
@@ -287,4 +278,3 @@ if prompt := st.chat_input("Digite sua mensagem..."):
                 st.audio(audio_file, format="audio/mp3")
         except:
             pass
-   
