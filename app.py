@@ -4,12 +4,12 @@ import os
 
 # --- CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(
-    page_title="Impossível", 
-    page_icon="🤖", 
+    page_title="Impossível - IA Sem Limites", 
+    page_icon="🔥", 
     layout="wide"
 )
 
-# --- ESTILO VISUAL OTIMIZADO ---
+# --- ESTILO VISUAL IDÊNTICO AO DESIGN (TEMA ESCURO + VERMELHO NEON) ---
 st.markdown("""
 <style>
     #MainMenu {visibility: hidden;}
@@ -19,125 +19,162 @@ st.markdown("""
     .stApp {
         background-color: #0b0b0b !important;
         color: #ffffff !important;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     
+    /* Barra Lateral Estilizada */
     [data-testid="stSidebar"] {
         background-color: #121212 !important;
-        border-right: 1px solid #1f1f1f;
+        border-right: 1px solid #1a1a1a;
     }
     
+    /* Caixa de Input de Chat */
     .stChatInputContainer input {
-        background-color: #000000 !important;
+        background-color: #141414 !important;
         color: #ffffff !important;
-        border: 1px solid #ff3333 !important;
-        border-radius: 14px !important;
-        padding: 12px 20px !important;
+        border: 1px solid #ff2a2a !important;
+        border-radius: 16px !important;
+        padding: 14px 20px !important;
     }
     
+    .stChatInputContainer input::placeholder {
+        color: #666666 !important;
+    }
+
+    /* Mensagens do Chat */
     .stChatMessage {
         background-color: #141414 !important;
         border: 1px solid #1f1f1f !important;
-        border-radius: 12px !important;
+        border-radius: 14px !important;
         color: #ffffff !important;
+        margin-bottom: 10px;
     }
     
-    .hero-box {
-        background: radial-gradient(circle at 80% 20%, rgba(255, 51, 51, 0.15) 0%, rgba(11, 11, 11, 0) 60%);
-        border: 1px solid #1f1f1f;
-        border-radius: 16px;
-        padding: 40px;
-        margin-bottom: 30px;
+    .stChatMessage p, .stChatMessage div, .stChatMessage span {
+        color: #ffffff !important;
+    }
+
+    /* Hero Banner com Estilo Vermelho */
+    .hero-container {
+        background: radial-gradient(circle at 70% 30%, rgba(255, 42, 42, 0.12) 0%, rgba(11, 11, 11, 0) 70%);
+        border: 1px solid #1c1c1c;
+        border-radius: 20px;
+        padding: 35px;
+        margin-bottom: 25px;
+    }
+    
+    .brand-subtitle {
+        color: #ff2a2a;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 6px;
     }
     
     .hero-title {
         color: #ffffff;
-        font-size: 32px;
+        font-size: 30px;
         font-weight: 700;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
     
     .hero-title span {
-        color: #ff3333;
+        color: #ff2a2a;
     }
     
     .hero-desc {
         color: #888888;
-        font-size: 15px;
-        max-width: 600px;
-        line-height: 1.5;
+        font-size: 14px;
+        max-width: 550px;
     }
     
-    .section-title {
+    /* Grelha de Cartões de Ação Rápida */
+    .section-label {
         color: #ffffff;
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 600;
         margin-bottom: 15px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
     }
     
     .cards-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 15px;
-        margin-bottom: 30px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-bottom: 25px;
     }
     
     .action-card {
         background-color: #141414;
-        border: 1px solid #1f1f1f;
-        border-radius: 12px;
-        padding: 18px;
+        border: 1px solid #1c1c1c;
+        border-radius: 14px;
+        padding: 16px;
+        transition: all 0.2s ease-in-out;
+    }
+    
+    .action-card:hover {
+        border-color: #ff2a2a;
+        background-color: #181414;
+    }
+    
+    .card-icon {
+        color: #ff2a2a;
+        font-size: 16px;
+        margin-bottom: 8px;
     }
     
     .card-title {
         color: #ffffff;
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 600;
-        margin-bottom: 6px;
+        margin-bottom: 4px;
     }
     
     .card-desc {
         color: #777777;
-        font-size: 12px;
-        line-height: 1.4;
+        font-size: 11px;
+        line-height: 1.3;
     }
     
+    /* Botões da barra lateral / gerais */
     .stButton button {
-        background-color: #ff3333 !important;
+        background-color: #ff2a2a !important;
         color: #000000 !important;
-        border: 1px solid #ff4d4d !important;
-        border-radius: 8px !important;
-        width: 100% !important;
-        font-weight: bold !important;
+        border: none !important;
+        border-radius: 10px !important;
+        font-weight: 700 !important;
+    }
+    
+    .stButton button:hover {
+        background-color: #e02424 !important;
+        color: #ffffff !important;
     }
 </style>
 
 <script>
-    function forcarEscuro() {
-        const elementos = document.querySelectorAll('[data-testid="stAppViewContainer"], section.main, .block-container, [data-testid="stChatInputContainer"], footer');
-        elementos.forEach(el => {
+    function forcarFundoEscuro() {
+        const alvos = document.querySelectorAll('[data-testid="stAppViewContainer"], section.main, .block-container, footer');
+        alvos.forEach(el => {
             el.style.backgroundColor = '#0b0b0b';
             el.style.color = '#ffffff';
         });
     }
-    setInterval(forcarEscuro, 200);
+    setInterval(forcarFundoEscuro, 200);
 </script>
 """, unsafe_allow_html=True)
 
-# --- GESTÃO DE ESTADO DO SOTAQUE/IDIOMA ---
+# --- ESTADO DO SOTAQUE/IDIOMA ---
 if "opcao_voz" not in st.session_state:
     st.session_state.opcao_voz = "Brasileiro - Ana"
 
-# --- BARRA LATERAL ---
-st.sidebar.markdown("<h3 style='color: #ff3333; margin-bottom: 20px;'>⚡ Impossível</h3>", unsafe_allow_html=True)
-st.sidebar.markdown("<p style='color: #666; font-size: 12px; margin-top: -15px;'>Sua IA pessoal, para a vida.</p>", unsafe_allow_html=True)
+# --- BARRA LATERAL (PAINEL DE NAVEGAÇÃO) ---
+st.sidebar.markdown("<h2 style='color: #ff2a2a; margin-bottom: 2px; font-size: 20px;'>🔥 IMPOSSÍVEL</h2>", unsafe_allow_html=True)
+st.sidebar.markdown("<p style='color: #777; font-size: 11px; margin-top: 0;'>IA SEM LIMITES</p>", unsafe_allow_html=True)
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("<p style='color: #fff; font-weight: 600;'>🌍 Selecione o Estilo / Sotaque:</p>", unsafe_allow_html=True)
+st.sidebar.markdown("<p style='color: #fff; font-weight: 600; font-size: 13px;'>🌍 Sotaque / Idioma:</p>", unsafe_allow_html=True)
 
-opcoes = [
+opcoes_voz = [
     "Brasileiro - Ana",
     "Brasileiro - Gaúcho",
     "Brasileiro - Mineiro",
@@ -149,61 +186,57 @@ opcoes = [
     "Mexicano"
 ]
 
-for op in opcoes:
-    if st.sidebar.button(f"{'▶ ' if st.session_state.opcao_voz == op else ''}{op}", key=f"btn_{op}"):
+for op in opcoes_voz:
+    ativo = st.session_state.opcao_voz == op
+    if st.sidebar.button(f"{'▶ ' if ativo else ''}{op}", key=f"sb_{op}"):
         st.session_state.opcao_voz = op
         st.rerun()
 
 st.sidebar.markdown("---")
-if st.sidebar.button("🧹 Limpar Histórico", key="btn_limpar"):
+if st.sidebar.button("🧹 Limpar Conversa", key="btn_limpar_chat"):
     st.session_state.messages = []
     st.rerun()
 
-# --- INTERFACE PRINCIPAL ---
+# --- INTERFACE PRINCIPAL (ESTILO DA IMAGEM) ---
 st.markdown("""
-<div class="hero-box">
-    <div style="font-size: 12px; color: #ff3333; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Bem-vindo(a)</div>
-    <div class="hero-title">Olá, eu sou a <span>Impossível</span></div>
-    <div class="hero-desc">Sua IA pessoal, pronta para te ajudar a pensar mais longe, criar mais rápido e transformar suas ideias em realidade.</div>
+<div class="hero-container">
+    <div class="brand-subtitle">■ IMPOSSÍVEL IA</div>
+    <div class="hero-title">Olá, <span>Derick</span>!</div>
+    <div class="hero-desc">O que você quer criar hoje? Escolha uma das opções abaixo ou digite sua mensagem diretamente no chat.</div>
 </div>
 """, unsafe_allow_html=True)
 
+# Grelha de Ações Rápidas Inspirada na Imagem
+st.markdown('<div class="section-label">Sugestões de Ação</div>', unsafe_allow_html=True)
 st.markdown("""
-<div class="section-title">
-    <span style="color: #ff3333;">■</span> O que você quer fazer hoje?
-</div>
 <div class="cards-grid">
     <div class="action-card">
-        <div class="card-title">💬 Conversar</div>
-        <div class="card-desc">Tire suas dúvidas, peça conselhos e mantenha conversas fluídas.</div>
+        <div class="card-icon">💡</div>
+        <div class="card-title">Criar algo novo</div>
+        <div class="card-desc">Dê asas à sua imaginação e crie projetos originais.</div>
     </div>
     <div class="action-card">
-        <div class="card-title">🎨 Criar Imagem</div>
-        <div class="card-desc">Transforme textos em ilustrações e imagens impressionantes.</div>
+        <div class="card-icon">🔍</div>
+        <div class="card-title">Pesquisar</div>
+        <div class="card-desc">Encontre dados, fatos e conteúdos detalhados.</div>
     </div>
     <div class="action-card">
-        <div class="card-title">📄 Analisar Documentos</div>
-        <div class="card-desc">Faça upload de ficheiros para resumir, analisar e extrair insights.</div>
+        <div class="card-icon">💻</div>
+        <div class="card-title">Escrever código</div>
+        <div class="card-desc">Desenvolva e corrija scripts em qualquer linguagem.</div>
     </div>
     <div class="action-card">
-        <div class="card-title">💻 Programar</div>
-        <div class="card-desc">Escreva, depure e otimize códigos em várias linguagens.</div>
-    </div>
-    <div class="action-card">
-        <div class="card-title">🌐 Pesquisar na Web</div>
-        <div class="card-desc">Encontre informações atualizadas na internet em tempo real.</div>
-    </div>
-    <div class="action-card">
-        <div class="card-title">💡 Brainstorming</div>
-        <div class="card-desc">Gere ideias criativas e soluções inovadoras para seus projetos.</div>
+        <div class="card-icon">🧠</div>
+        <div class="card-title">Resolver problemas</div>
+        <div class="card-desc">Solucione desafios complexos de forma lógica e rápida.</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
 st.markdown("---")
-st.markdown(f"### 💬 Chat Ativo <span style='font-size: 14px; color: #ff3333;'>({st.session_state.opcao_voz})</span>", unsafe_allow_html=True)
+st.markdown(f"### 💬 Conversa Ativa <span style='font-size: 13px; color: #ff2a2a;'>({st.session_state.opcao_voz})</span>", unsafe_allow_html=True)
 
-# Inicializar histórico
+# Inicializar histórico do chat
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -211,92 +244,57 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-if prompt := st.chat_input("Digite a sua mensagem para a Impossível..."):
+if prompt := st.chat_input("Digite sua mensagem..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
     prompt_lower = prompt.lower().strip()
-    opcao_voz = st.session_state.opcao_voz
+    voz = st.session_state.opcao_voz
     
-    if "Gaúcho" in opcao_voz:
-        lang_code = 'pt'
-        if any(w in prompt_lower for w in ["oi", "olá", "tudo bem", "como vai"]):
-            resposta_ia = "Bah, guri! Tudo certo por aqui e contigo? Como é que eu posso te ajudar hoje?"
-        else:
-            resposta_ia = f"Entendido, vivente! Sobre '{prompt}', a minha visão é que nós podemos resolver isso logo."
-            
-    elif "Mineiro" in opcao_voz:
-        lang_code = 'pt'
-        if any(w in prompt_lower for w in ["oi", "olá", "tudo bem", "como vai"]):
-            resposta_ia = "Uai, sô! Trem bão? Por aqui tá tudo joia. O que cê manda?"
-        else:
-            resposta_ia = f"Com certeza, sô! Sobre '{prompt}', o trem funciona direitinho se a gente planejar."
-            
-    elif "Carioca" in opcao_voz:
-        lang_code = 'pt'
-        if any(w in prompt_lower for w in ["oi", "olá", "tudo bem", "como vai"]):
-            resposta_ia = "Fala, irmão! Tranquilidade total. Qual é a boa de hoje?"
-        else:
-            resposta_ia = f"Papo retíssimo, menor! Sobre '{prompt}', pode deixar que eu resolvo isso contigo."
-            
-    elif "Italiano" in opcao_voz:
-        lang_code = 'it'
-        if any(w in prompt_lower for w in ["ciao", "salve", "buongiorno"]):
-            resposta_ia = "Ciao! Come posso aiutarti oggi?"
-        else:
-            resposta_ia = f"Ho capito riguardo a '{prompt}'. Ecco la mia risposta per te."
-        
-    elif "Inglês" in opcao_voz:
-        lang_code = 'en'
-        if any(w in prompt_lower for w in ["hi", "hello", "how are you"]):
-            resposta_ia = "Hello! How can I help you today?"
-        else:
-            resposta_ia = f"Regarding '{prompt}', here is what I think we should do."
-        
-    elif "Alemão" in opcao_voz:
-        lang_code = 'de'
-        if any(w in prompt_lower for w in ["hallo", "guten tag"]):
-            resposta_ia = "Hallo! Wie kann ich dir heute helfen?"
-        else:
-            resposta_ia = f"Zu '{prompt}': Das ist ein sehr interessanter Punkt."
-        
-    elif "Mexicano" in opcao_voz:
-        lang_code = 'es'
-        if any(w in prompt_lower for w in ["hola", "qué tal"]):
-            resposta_ia = "¡Qué onda, güey! ¿Cómo andas? ¿En qué te puedo ajudar?"
-        else:
-            resposta_ia = f"Sobre '{prompt}', ¡a darle con todo para resolverlo!"
-        
-    elif "Espanhol" in opcao_voz:
-        lang_code = 'es'
-        if any(w in prompt_lower for w in ["hola", "qué tal"]):
-            resposta_ia = "¡Hola! ¿Cómo estás? ¿En qué te puedo ajudar hoy?"
-        else:
-            resposta_ia = f"Respecto a '{prompt}', esto es lo que te puedo decir."
-        
-    else:  # Brasileiro - Ana
-        lang_code = 'pt'
-        if any(w in prompt_lower for w in ["oi", "olá", "tudo bem", "como vai"]):
-            resposta_ia = "Olá! É um prazer falar contigo. Como posso ajudar?"
-        else:
-            resposta_ia = f"Entendi a tua questão sobre '{prompt}'. Vamos lá resolver isto juntos."
+    # Lógica de respostas por sotaque
+    if "Gaúcho" in voz:
+        lang = 'pt'
+        resposta = f"Bah, guri! Sobre '{prompt}', a minha visão é que nós vamos longe!"
+    elif "Mineiro" in voz:
+        lang = 'pt'
+        resposta = f"Uai, sô! Sobre '{prompt}', o trem vai funcionar perfeitamente."
+    elif "Carioca" in voz:
+        lang = 'pt'
+        resposta = f"Papo retíssimo, menor! Sobre '{prompt}', pode deixar que eu resolvo contigo."
+    elif "Italiano" in voz:
+        lang = 'it'
+        resposta = f"Ho capito riguardo a '{prompt}'. Facciamo grandi cose insieme!"
+    elif "Inglês" in voz:
+        lang = 'en'
+        resposta = f"Regarding '{prompt}', let's make it happen right now."
+    elif "Alemão" in voz:
+        lang = 'de'
+        resposta = f"Zu '{prompt}': Das packen wir gemeinsam an."
+    elif "Mexicano" in voz:
+        lang = 'es'
+        resposta = f"¡Qué onda, güey! Sobre '{prompt}', ¡a darle con todo!"
+    elif "Espanhol" in voz:
+        lang = 'es'
+        resposta = f"Respecto a '{prompt}', esto lo resolvemos enseguida."
+    else:
+        lang = 'pt'
+        resposta = f"Entendi a tua questão sobre '{prompt}'. Vamos lá resolver isto juntos!"
 
-    st.session_state.messages.append({"role": "assistant", "content": resposta_ia})
+    st.session_state.messages.append({"role": "assistant", "content": resposta})
     with st.chat_message("assistant"):
-        st.markdown(resposta_ia)
+        st.markdown(resposta)
         
-        ficheiro_audio = "resposta_audio.mp3"
-        if os.path.exists(ficheiro_audio):
+        audio_file = "voz_resp.mp3"
+        if os.path.exists(audio_file):
             try:
-                os.remove(ficheiro_audio)
+                os.remove(audio_file)
             except:
                 pass
-            
         try:
-            tts = gTTS(text=resposta_ia, lang=lang_code, slow=False)
-            tts.save(ficheiro_audio)
-            if os.path.exists(ficheiro_audio):
-                st.audio(ficheiro_audio, format="audio/mp3")
-        except Exception:
+            tts = gTTS(text=resposta, lang=lang, slow=False)
+            tts.save(audio_file)
+            if os.path.exists(audio_file):
+                st.audio(audio_file, format="audio/mp3")
+        except:
             pass
