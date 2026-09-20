@@ -9,7 +9,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- ESTESTICA CYBERPUNK / ESCURO TOTAL (SEM FUNDOS BRANCOS) ---
+# --- ESTILO VISUAL COM CHAT PRETO E LETRAS BRANCAS ---
 st.markdown("""
 <style>
     #MainMenu {visibility: hidden;}
@@ -18,7 +18,7 @@ st.markdown("""
     
     .stApp {
         background-color: #0b0b0b;
-        color: #e0e0e0;
+        color: #ffffff;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     
@@ -27,6 +27,38 @@ st.markdown("""
         border-right: 1px solid #1f1f1f;
     }
     
+    /* --- CORREÇÃO DO CHAT: Fundo Preto e Letras Brancas --- */
+    
+    /* Caixa de texto onde o utilizador escreve (Input) */
+    .stChatInputContainer input {
+        background-color: #000000 !important;
+        color: #ffffff !important;
+        border: 1px solid #ff3333 !important;
+        border-radius: 14px !important;
+        padding: 12px 20px !important;
+    }
+    
+    .stChatInputContainer input::placeholder {
+        color: #777777 !important;
+    }
+    
+    .stChatInputContainer {
+        background-color: transparent !important;
+    }
+
+    /* Mensagens do Chat (tanto do utilizador como da IA) com fundo preto e texto branco */
+    .stChatMessage {
+        background-color: #141414 !important;
+        border: 1px solid #1f1f1f !important;
+        border-radius: 12px !important;
+        color: #ffffff !important;
+    }
+    
+    /* Garantir que todo o texto dentro das mensagens do chat seja branco */
+    .stChatMessage p, .stChatMessage div, .stChatMessage span {
+        color: #ffffff !important;
+    }
+
     /* Hero Banner Principal */
     .hero-box {
         background: radial-gradient(circle at 80% 20%, rgba(255, 51, 51, 0.15) 0%, rgba(11, 11, 11, 0) 60%);
@@ -98,13 +130,7 @@ st.markdown("""
         line-height: 1.4;
     }
     
-    .stChatMessage {
-        background-color: #141414;
-        border: 1px solid #1f1f1f;
-        border-radius: 12px;
-    }
-    
-    /* Botões gerais da barra lateral personalizados em vermelho e preto */
+    /* Botões gerais personalizados em vermelho e preto */
     .stButton button {
         background-color: #ff3333 !important;
         color: #000000 !important;
@@ -132,7 +158,6 @@ st.sidebar.markdown("<p style='color: #666; font-size: 12px; margin-top: -15px;'
 st.sidebar.markdown("---")
 st.sidebar.markdown("<p style='color: #fff; font-weight: 600;'>🌍 Selecione o Estilo / Sotaque:</p>", unsafe_allow_html=True)
 
-# Lista de opções de sotaques e idiomas em formato de botões escuros/vermelhos (sem fundos brancos!)
 opcoes = [
     "Brasileiro - Ana",
     "Brasileiro - Gaúcho",
@@ -146,7 +171,6 @@ opcoes = [
 ]
 
 for op in opcoes:
-    # Destaca visualmente a opção escolhida atualmente
     if st.sidebar.button(f"{'▶ ' if st.session_state.opcao_voz == op else ''}{op}", key=f"btn_{op}"):
         st.session_state.opcao_voz = op
         st.rerun()
@@ -216,7 +240,6 @@ if prompt := st.chat_input("Digite a sua mensagem para a Impossível..."):
     prompt_lower = prompt.lower().strip()
     opcao_voz = st.session_state.opcao_voz
     
-    # Lógica de respostas diretas e naturais
     if "Gaúcho" in opcao_voz:
         lang_code = 'pt'
         if any(w in prompt_lower for w in ["oi", "olá", "tudo bem", "como vai"]):
@@ -269,7 +292,7 @@ if prompt := st.chat_input("Digite a sua mensagem para a Impossível..."):
     elif "Espanhol" in opcao_voz:
         lang_code = 'es'
         if any(w in prompt_lower for w in ["hola", "qué tal"]):
-            resposta_ia = "¡Hola! ¿Cómo estás? ¿En qué te puedo ayudar hoy?"
+            resposta_ia = "¡Hola! ¿Cómo estás? ¿En qué te puedo ajudar hoy?"
         else:
             resposta_ia = f"Respecto a '{prompt}', esto es lo que te puedo decir."
         
