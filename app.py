@@ -4,15 +4,79 @@ import os
 
 # --- CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(
-    page_title="IA Impossível - Avançada", 
+    page_title="Impossível - IA Avançada", 
     page_icon="🤖", 
     layout="wide"
 )
 
-st.title("🤖 IA Impossível - Assistente Avançado")
+# --- ESTILO VISUAL PERSONALIZADO (ESTÉTICA DA FOTO) ---
+st.markdown("""
+<style>
+    /* Fundo geral escuro estilo obsidian/cyberpunk */
+    .stApp {
+        background-color: #0b0b0b;
+        color: #e0e0e0;
+    }
+    
+    /* Barra lateral escura com margens arredondadas */
+    [data-testid="stSidebar"] {
+        background-color: #121212;
+        border-right: 1px solid #1f1f1f;
+    }
+    
+    /* Títulos e textos principais */
+    h1, h2, h3 {
+        color: #ffffff !important;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    
+    /* Caixa de input de chat personalizada com brilho vermelho subtil */
+    .stChatInputContainer input {
+        background-color: #161616 !important;
+        color: #ffffff !important;
+        border: 1px solid #331111 !important;
+        border-radius: 12px !important;
+    }
+    
+    /* Mensagens do chat */
+    .stChatMessage {
+        background-color: #141414;
+        border: 1px solid #1f1f1f;
+        border-radius: 12px;
+        padding: 10px;
+    }
+    
+    /* Botões personalizados */
+    .stButton button {
+        background: linear-gradient(135deg, #2b0c0c 0%, #141414 100%);
+        color: #ff4d4d;
+        border: 1px solid #ff3333;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+    
+    .stButton button:hover {
+        background: linear-gradient(135deg, #ff3333 0%, #990000 100%);
+        color: #ffffff;
+        border: 1px solid #ff4d4d;
+    }
+    
+    /* Selectbox e Radio buttons */
+    .stSelectbox div[data-baseweb="select"] > div, .stRadio div {
+        background-color: #161616;
+        color: #ffffff;
+        border-radius: 8px;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# --- CABEÇALHO DA INTERFACE ---
+st.title("🔥 Impossível")
+st.markdown("<p style='color: #ff4d4d; margin-top: -15px;'>Sua IA pessoal, pronta para te ajudar a pensar mais longe, criar mais rápido e transformar suas ideias em realidade.</p>", unsafe_allow_html=True)
 
 # --- MENU DE DEFINIÇÕES NA BARRA LATERAL ---
-st.sidebar.title("⚙️ Definições Avançadas")
+st.sidebar.title("⚙️ Painel de Controlo")
 
 st.sidebar.markdown("---")
 st.sidebar.subheader("🌍 Idioma e Sotaque")
@@ -33,8 +97,8 @@ opcao_voz = st.sidebar.selectbox(
     key="select_idioma_voz"
 )
 
-# Botão para limpar o histórico
-if st.sidebar.button("🧹 Limpar Histórico / Reiniciar"):
+st.sidebar.markdown("---")
+if st.sidebar.button("🧹 Limpar Histórico"):
     st.session_state.messages = []
     st.rerun()
 
@@ -128,7 +192,7 @@ if prompt := st.chat_input("Escreve a tua mensagem aqui..."):
     with st.chat_message("assistant"):
         st.markdown(resposta_ia)
         
-        # Gerar o áudio com gTTS sem mensagens de erro no ecrã
+        # Gerar o áudio com gTTS
         ficheiro_audio = "resposta_audio.mp3"
         if os.path.exists(ficheiro_audio):
             try:
