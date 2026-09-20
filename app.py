@@ -1,1 +1,1 @@
-const keys = [...Object.keys(obj)].sort();
+keys = sorted(obj.keys())
