@@ -12,11 +12,11 @@ st.sidebar.title("⚙️ Definições da IA")
 nome_ia = st.sidebar.text_input("Nome da IA", value="Impossível")
 
 st.sidebar.markdown("---")
-st.sidebar.subheader("🎙️ Seleção de Locutor")
+st.sidebar.subheader("🎙️ Seleção de Sotaque / Voz")
 
 locutor = st.sidebar.radio(
-    "Escolha quem vai falar:",
-    ["Ana (Feminina)", "Marcos (Masculino)"],
+    "Escolha o estilo de voz:",
+    ["Ana", "Gaúcho", "Mineiro", "Carioca"],
     key="radio_locutor"
 )
 
@@ -35,19 +35,21 @@ if prompt := st.chat_input("Escreve a tua mensagem aqui..."):
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Definir a resposta com base na escolha do locutor
-    if "Marcos" in locutor:
-        resposta_ia = f"E aí, Derick! Aqui fala o Marcos. Recebi a tua mensagem: '{prompt}'."
-        tlang = 'pt'
+    # Respostas naturais ajustadas a cada estilo/sotaque
+    if locutor == "Gaúcho":
+        resposta_ia = f"Bah, guri! Tchê, sobre isso que tu perguntaste: {prompt}"
+    elif locutor == "Mineiro":
+        resposta_ia = f"Uai, sô! Trem bão? Negócio é o seguinte: {prompt}"
+    elif locutor == "Carioca":
+        resposta_ia = f"Fala, irmão! Tranquilidade? Papo reto sobre isso aí: {prompt}"
     else:
-        resposta_ia = f"Olá Derick! Aqui fala a Ana. Recebi a tua mensagem: '{prompt}'."
-        tlang = 'pt'
+        resposta_ia = f"Olá! Aqui fala a Ana. Analisando a tua questão: {prompt}"
 
     st.session_state.messages.append({"role": "assistant", "content": resposta_ia})
     with st.chat_message("assistant"):
         st.markdown(resposta_ia)
         
-        # Gerar o áudio de forma segura com gTTS
+        # Gerar o áudio de forma segura com gTTS em português (pt)
         ficheiro_audio = "resposta_audio.mp3"
         if os.path.exists(ficheiro_audio):
             try:
@@ -56,7 +58,7 @@ if prompt := st.chat_input("Escreve a tua mensagem aqui..."):
                 pass
             
         try:
-            tts = gTTS(text=resposta_ia, lang=tlang, slow=False)
+            tts = gTTS(text=resposta_ia, lang='pt', slow=False)
             tts.save(ficheiro_audio)
             if os.path.exists(ficheiro_audio):
                 st.audio(ficheiro_audio, format="audio/mp3")
