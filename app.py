@@ -1,6 +1,15 @@
+import sys
+import subprocess
+
+# Instalação automática blindada do edge-tts para o Streamlit Cloud
+try:
+    import edge_tts
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "edge-tts"])
+    import edge_tts
+
 import streamlit as st
 import asyncio
-import edge_tts
 import os
 
 # --- CONFIGURAÇÃO DA PÁGINA ---
@@ -10,7 +19,6 @@ st.title("🤖 IA Impossível - O teu Assistente")
 
 # --- MENU DE DEFINIÇÕES NA BARRA LATERAL ---
 st.sidebar.title("⚙️ Definições da IA")
-
 nome_ia = st.sidebar.text_input("Nome da IA", value="Impossível")
 
 st.sidebar.markdown("---")
@@ -22,10 +30,14 @@ locutor = st.sidebar.radio(
     key="radio_locutor"
 )
 
-# Função assíncrona para gerar o áudio de forma gratuita
-async def gerar_audio_edge(texto, voz, ficheiro_saida):
-    comunicador = edge_tts.Communicate(texto, voz)
-    await comunicador.save(ficheiro_saida)
+# Função assíncrona protegida para gerar o áudio
+async def gerar_audio_seguro(texto, voz, ficheiro_saida):
+    try:
+        comunicador = edge_tts.Communicate(texto, voz)
+        await comunicador.save(ficheiro_saida)
+        return True
+    except Exception as e:
+        return False
 
 # --- ÁREA PRINCIPAL DO CHAT ---
 st.markdown("### 💬 Conversa com a IA")
@@ -44,23 +56,35 @@ if prompt := st.chat_input("Escreve a tua mensagem aqui..."):
 
     # Definir a voz com base na escolha do locutor
     if "Marcos" in locutor:
-        voz_escolhida = "pt-BR-AntonioNeural"  # Voz masculina natural do Brasil
+        voz_escolhida = "pt-BR-AntonioNeural"  # Voz masculina natural
         resposta_ia = f"E aí, Derick! Aqui fala o Marcos. Recebi a tua mensagem: '{prompt}'."
     else:
-        voz_escolhida = "pt-BR-FranciscaNeural"  # Voz feminina natural do Brasil
+        voz_escolhida = "pt-BR-FranciscaNeural"  # Voz feminina natural
         resposta_ia = f"Olá Derick! Aqui fala a Ana. Recebi a tua mensagem: '{prompt}'."
 
     st.session_state.messages.append({"role": "assistant", "content": resposta_ia})
     with st.chat_message("assistant"):
         st.markdown(resposta_ia)
         
-        # Gerar o ficheiro de áudio com edge-tts
+        # Gerar o áudio com proteção contra erros
         ficheiro_audio = "resposta_audio.mp3"
         if os.path.exists(ficheiro_audio):
-            os.remove(ficheiro_audio)
+            try:
+                os.remove(ficheiro_audio)
+            except:
+                pass
             
-        asyncio.run(gerar_audio_edge(resposta_ia, voz_escolhida, ficheiro_audio))
+        # Executar a geração de áudio
+        sucesso = False
+        try:
+            sucesso = asyncio.run(gerar_audio_seguro(resposta_ia, voz_escolhida, ficheiro_audio))
+        except RuntimeError:
+            # Caso o loop assíncrono já esteja aberto em algum contexto do Streamlit
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            sucesso = loop.run_until_complete(gerar_audio_seguro(resposta_ia, voz_escolhida, ficheiro_audio))
         
-        if os.path.exists(ficheiro_audio):
+        if sucesso and os.path.exists(ficheiro_audio):
             st.audio(ficheiro_audio, format="audio/mp3")
-            
+        else:
+            st.info("💡 A mensagem foi processada com sucesso por texto!")
