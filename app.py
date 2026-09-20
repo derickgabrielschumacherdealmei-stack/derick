@@ -9,7 +9,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- ESTILO VISUAL OTIMIZADO ---
+# --- ESTILO CSS + JAVASCRIPT DE FORÇAGEM ABSOLUTA ---
 st.markdown("""
 <style>
     #MainMenu {visibility: hidden;}
@@ -17,9 +17,8 @@ st.markdown("""
     header {visibility: hidden;}
     
     .stApp {
-        background-color: #0b0b0b;
-        color: #ffffff;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background-color: #0b0b0b !important;
+        color: #ffffff !important;
     }
     
     [data-testid="stSidebar"] {
@@ -27,7 +26,6 @@ st.markdown("""
         border-right: 1px solid #1f1f1f;
     }
     
-    /* Caixa de texto do input */
     .stChatInputContainer input {
         background-color: #000000 !important;
         color: #ffffff !important;
@@ -36,11 +34,6 @@ st.markdown("""
         padding: 12px 20px !important;
     }
     
-    .stChatInputContainer input::placeholder {
-        color: #888888 !important;
-    }
-
-    /* Mensagens do Chat */
     .stChatMessage {
         background-color: #141414 !important;
         border: 1px solid #1f1f1f !important;
@@ -48,11 +41,6 @@ st.markdown("""
         color: #ffffff !important;
     }
     
-    .stChatMessage p, .stChatMessage div, .stChatMessage span {
-        color: #ffffff !important;
-    }
-
-    /* Hero Banner Principal */
     .hero-box {
         background: radial-gradient(circle at 80% 20%, rgba(255, 51, 51, 0.15) 0%, rgba(11, 11, 11, 0) 60%);
         border: 1px solid #1f1f1f;
@@ -79,7 +67,6 @@ st.markdown("""
         line-height: 1.5;
     }
     
-    /* Grelha de Ações Rápidas */
     .section-title {
         color: #ffffff;
         font-size: 16px;
@@ -102,12 +89,6 @@ st.markdown("""
         border: 1px solid #1f1f1f;
         border-radius: 12px;
         padding: 18px;
-        transition: all 0.3s ease;
-    }
-    
-    .action-card:hover {
-        border-color: #ff3333;
-        background-color: #181414;
     }
     
     .card-title {
@@ -123,7 +104,6 @@ st.markdown("""
         line-height: 1.4;
     }
     
-    /* Botões gerais */
     .stButton button {
         background-color: #ff3333 !important;
         color: #000000 !important;
@@ -132,12 +112,19 @@ st.markdown("""
         width: 100% !important;
         font-weight: bold !important;
     }
-    
-    .stButton button:hover {
-        background-color: #cc0000 !important;
-        color: #ffffff !important;
-    }
 </style>
+
+<script>
+    // Força o fundo escuro via JavaScript em todos os elementos problemáticos assim que carregar
+    function forcarEscuro() {
+        const elementos = document.querySelectorAll('[data-testid="stAppViewContainer"], section.main, .block-container, [data-testid="stChatInputContainer"], footer');
+        elementos.forEach(el => {
+            el.style.backgroundColor = '#0b0b0b';
+            el.style.color = '#ffffff';
+        });
+    }
+    setInterval(forcarEscuro, 200);
+</script>
 """, unsafe_allow_html=True)
 
 # --- GESTÃO DE ESTADO DO SOTAQUE/IDIOMA ---
@@ -312,5 +299,3 @@ if prompt := st.chat_input("Digite a sua mensagem para a Impossível..."):
             tts.save(ficheiro_audio)
             if os.path.exists(ficheiro_audio):
                 st.audio(ficheiro_audio, format="audio/mp3")
-        except:
-            pass
