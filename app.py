@@ -9,7 +9,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- ESTILO VISUAL IDÊNTICO AO DESIGN (TEMA ESCURO + VERMELHO NEON) ---
+# --- ESTILO CSS PURO (SEM JAVASCRIPT PARA EVITAR ERROS NO REACT) ---
 st.markdown("""
 <style>
     #MainMenu {visibility: hidden;}
@@ -22,13 +22,11 @@ st.markdown("""
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     
-    /* Barra Lateral Estilizada */
     [data-testid="stSidebar"] {
         background-color: #121212 !important;
         border-right: 1px solid #1a1a1a;
     }
     
-    /* Caixa de Input de Chat */
     .stChatInputContainer input {
         background-color: #141414 !important;
         color: #ffffff !important;
@@ -41,7 +39,6 @@ st.markdown("""
         color: #666666 !important;
     }
 
-    /* Mensagens do Chat */
     .stChatMessage {
         background-color: #141414 !important;
         border: 1px solid #1f1f1f !important;
@@ -54,7 +51,6 @@ st.markdown("""
         color: #ffffff !important;
     }
 
-    /* Hero Banner com Estilo Vermelho */
     .hero-container {
         background: radial-gradient(circle at 70% 30%, rgba(255, 42, 42, 0.12) 0%, rgba(11, 11, 11, 0) 70%);
         border: 1px solid #1c1c1c;
@@ -89,7 +85,6 @@ st.markdown("""
         max-width: 550px;
     }
     
-    /* Grelha de Cartões de Ação Rápida */
     .section-label {
         color: #ffffff;
         font-size: 15px;
@@ -136,7 +131,6 @@ st.markdown("""
         line-height: 1.3;
     }
     
-    /* Botões da barra lateral / gerais */
     .stButton button {
         background-color: #ff2a2a !important;
         color: #000000 !important;
@@ -150,24 +144,22 @@ st.markdown("""
         color: #ffffff !important;
     }
 </style>
-
-<script>
-    function forcarFundoEscuro() {
-        const alvos = document.querySelectorAll('[data-testid="stAppViewContainer"], section.main, .block-container, footer');
-        alvos.forEach(el => {
-            el.style.backgroundColor = '#0b0b0b';
-            el.style.color = '#ffffff';
-        });
-    }
-    setInterval(forcarFundoEscuro, 200);
-</script>
 """, unsafe_allow_html=True)
+
+# --- GARANTIR O FICHEIRO DE CONFIGURAÇÃO NO GITHUB ---
+# Lembra-te de criar/manter o ficheiro `.streamlit/config.toml` no teu repositório com:
+# [theme]
+# base="dark"
+# primaryColor="#ff2a2a"
+# backgroundColor="#0b0b0b"
+# secondaryBackgroundColor="#121212"
+# textColor="#ffffff"
 
 # --- ESTADO DO SOTAQUE/IDIOMA ---
 if "opcao_voz" not in st.session_state:
     st.session_state.opcao_voz = "Brasileiro - Ana"
 
-# --- BARRA LATERAL (PAINEL DE NAVEGAÇÃO) ---
+# --- BARRA LATERAL ---
 st.sidebar.markdown("<h2 style='color: #ff2a2a; margin-bottom: 2px; font-size: 20px;'>🔥 IMPOSSÍVEL</h2>", unsafe_allow_html=True)
 st.sidebar.markdown("<p style='color: #777; font-size: 11px; margin-top: 0;'>IA SEM LIMITES</p>", unsafe_allow_html=True)
 
@@ -197,7 +189,7 @@ if st.sidebar.button("🧹 Limpar Conversa", key="btn_limpar_chat"):
     st.session_state.messages = []
     st.rerun()
 
-# --- INTERFACE PRINCIPAL (ESTILO DA IMAGEM) ---
+# --- INTERFACE PRINCIPAL ---
 st.markdown("""
 <div class="hero-container">
     <div class="brand-subtitle">■ IMPOSSÍVEL IA</div>
@@ -206,7 +198,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Grelha de Ações Rápidas Inspirada na Imagem
 st.markdown('<div class="section-label">Sugestões de Ação</div>', unsafe_allow_html=True)
 st.markdown("""
 <div class="cards-grid">
@@ -236,7 +227,6 @@ st.markdown("""
 st.markdown("---")
 st.markdown(f"### 💬 Conversa Ativa <span style='font-size: 13px; color: #ff2a2a;'>({st.session_state.opcao_voz})</span>", unsafe_allow_html=True)
 
-# Inicializar histórico do chat
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -252,7 +242,6 @@ if prompt := st.chat_input("Digite sua mensagem..."):
     prompt_lower = prompt.lower().strip()
     voz = st.session_state.opcao_voz
     
-    # Lógica de respostas por sotaque
     if "Gaúcho" in voz:
         lang = 'pt'
         resposta = f"Bah, guri! Sobre '{prompt}', a minha visão é que nós vamos longe!"
@@ -298,3 +287,4 @@ if prompt := st.chat_input("Digite sua mensagem..."):
                 st.audio(audio_file, format="audio/mp3")
         except:
             pass
+   
