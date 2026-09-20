@@ -9,10 +9,10 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- ESTILO VISUAL FIEL À IMAGEM (DARK & RED CYBERPUNK) ---
+# --- ESTILO VISUAL CORRIGIDO (VERMELHO COM LETRAS PRETAS) ---
 st.markdown("""
 <style>
-    /* Ocultar elementos nativos do Streamlit para parecer uma aplicação web real */
+    /* Ocultar elementos nativos do Streamlit */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
@@ -30,11 +30,33 @@ st.markdown("""
         border-right: 1px solid #1f1f1f;
     }
     
-    /* Container principal */
-    .main-container {
-        padding: 20px;
-        max-width: 1200px;
-        margin: 0 auto;
+    /* CORREÇÃO DOS ELEMENTOS BRANCOS: Caixa de Seleção e Inputs a Vermelho com Letras Pretas */
+    div[data-baseweb="select"] > div {
+        background-color: #ff3333 !important;
+        color: #000000 !important;
+        border-radius: 8px !important;
+        border: 1px solid #ff4d4d !important;
+        font-weight: bold;
+    }
+    
+    /* Texto dentro do seletor e opções */
+    div[data-baseweb="select"] span, div[data-baseweb="select"] div {
+        color: #000000 !important;
+    }
+    
+    /* Caixa de input de chat principal */
+    .stChatInputContainer input {
+        background-color: #ff3333 !important;
+        color: #000000 !important;
+        border: 1px solid #ff4d4d !important;
+        border-radius: 14px !important;
+        padding: 12px 20px !important;
+        font-weight: bold;
+    }
+    
+    /* Placeholder da caixa de input visível em preto */
+    .stChatInputContainer input::placeholder {
+        color: #222222 !important;
     }
     
     /* Hero Banner Principal */
@@ -44,7 +66,6 @@ st.markdown("""
         border-radius: 16px;
         padding: 40px;
         margin-bottom: 30px;
-        position: relative;
     }
     
     .hero-title {
@@ -65,7 +86,7 @@ st.markdown("""
         line-height: 1.5;
     }
     
-    /* Grelha de Ações Rápidas ("O que você quer fazer hoje?") */
+    /* Grelha de Ações Rápidas */
     .section-title {
         color: #ffffff;
         font-size: 16px;
@@ -89,7 +110,6 @@ st.markdown("""
         border-radius: 12px;
         padding: 18px;
         transition: all 0.3s ease;
-        cursor: pointer;
     }
     
     .action-card:hover {
@@ -110,15 +130,6 @@ st.markdown("""
         line-height: 1.4;
     }
     
-    /* Caixa de Chat e Input Estilizados */
-    .stChatInputContainer input {
-        background-color: #161616 !important;
-        color: #ffffff !important;
-        border: 1px solid #331111 !important;
-        border-radius: 14px !important;
-        padding: 12px 20px !important;
-    }
-    
     .stChatMessage {
         background-color: #141414;
         border: 1px solid #1f1f1f;
@@ -127,17 +138,17 @@ st.markdown("""
     
     /* Botões da barra lateral */
     .stButton button {
-        background-color: #1a1a1a;
-        color: #ff4d4d;
-        border: 1px solid #331111;
+        background-color: #ff3333;
+        color: #000000;
+        border: 1px solid #ff4d4d;
         border-radius: 8px;
         width: 100%;
-        font-weight: 600;
+        font-weight: bold;
     }
     
     .stButton button:hover {
-        background-color: #ff3333;
-        color: #ffffff;
+        background-color: #e60000;
+        color: #000000;
         border-color: #ff3333;
     }
 </style>
@@ -170,7 +181,7 @@ if st.sidebar.button("🧹 Limpar Histórico"):
     st.session_state.messages = []
     st.rerun()
 
-# --- INTERFACE PRINCIPAL (FIEL À REFERÊNCIA VISUAL) ---
+# --- INTERFACE PRINCIPAL ---
 st.markdown("""
 <div class="hero-box">
     <div style="font-size: 12px; color: #ff3333; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Bem-vindo(a)</div>
@@ -179,7 +190,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Grelha de Ações Rápidas visualmente idêntica à imagem
 st.markdown("""
 <div class="section-title">
     <span style="color: #ff3333;">■</span> O que você quer fazer hoje?
@@ -219,12 +229,10 @@ st.markdown("### 💬 Chat Ativo")
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Exibir histórico de mensagens anteriores
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# Capturar nova entrada do utilizador
 if prompt := st.chat_input("Digite a sua mensagem para a Impossível..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
@@ -232,7 +240,6 @@ if prompt := st.chat_input("Digite a sua mensagem para a Impossível..."):
 
     prompt_lower = prompt.lower().strip()
     
-    # Gerar respostas diretas, limpas e naturais
     if "Gaúcho" in opcao_voz:
         lang_code = 'pt'
         if any(w in prompt_lower for w in ["oi", "olá", "tudo bem", "como vai"]):
@@ -296,12 +303,10 @@ if prompt := st.chat_input("Digite a sua mensagem para a Impossível..."):
         else:
             resposta_ia = f"Entendi a tua questão sobre '{prompt}'. Vamos lá resolver isto juntos."
 
-    # Guardar e exibir a resposta da IA
     st.session_state.messages.append({"role": "assistant", "content": resposta_ia})
     with st.chat_message("assistant"):
         st.markdown(resposta_ia)
         
-        # Gerar áudio com gTTS de forma limpa
         ficheiro_audio = "resposta_audio.mp3"
         if os.path.exists(ficheiro_audio):
             try:
@@ -316,3 +321,4 @@ if prompt := st.chat_input("Digite a sua mensagem para a Impossível..."):
                 st.audio(ficheiro_audio, format="audio/mp3")
         except:
             pass
+ 
