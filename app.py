@@ -9,54 +9,22 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- ESTILO VISUAL CORRIGIDO (VERMELHO COM LETRAS PRETAS) ---
+# --- ESTESTICA CYBERPUNK / ESCURO TOTAL (SEM FUNDOS BRANCOS) ---
 st.markdown("""
 <style>
-    /* Ocultar elementos nativos do Streamlit */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* Fundo geral preto profundo */
     .stApp {
         background-color: #0b0b0b;
         color: #e0e0e0;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     
-    /* Barra lateral estilo painel dedicado */
     [data-testid="stSidebar"] {
         background-color: #121212 !important;
         border-right: 1px solid #1f1f1f;
-    }
-    
-    /* CORREÇÃO DOS ELEMENTOS BRANCOS: Caixa de Seleção e Inputs a Vermelho com Letras Pretas */
-    div[data-baseweb="select"] > div {
-        background-color: #ff3333 !important;
-        color: #000000 !important;
-        border-radius: 8px !important;
-        border: 1px solid #ff4d4d !important;
-        font-weight: bold;
-    }
-    
-    /* Texto dentro do seletor e opções */
-    div[data-baseweb="select"] span, div[data-baseweb="select"] div {
-        color: #000000 !important;
-    }
-    
-    /* Caixa de input de chat principal */
-    .stChatInputContainer input {
-        background-color: #ff3333 !important;
-        color: #000000 !important;
-        border: 1px solid #ff4d4d !important;
-        border-radius: 14px !important;
-        padding: 12px 20px !important;
-        font-weight: bold;
-    }
-    
-    /* Placeholder da caixa de input visível em preto */
-    .stChatInputContainer input::placeholder {
-        color: #222222 !important;
     }
     
     /* Hero Banner Principal */
@@ -136,48 +104,55 @@ st.markdown("""
         border-radius: 12px;
     }
     
-    /* Botões da barra lateral */
+    /* Botões gerais da barra lateral personalizados em vermelho e preto */
     .stButton button {
-        background-color: #ff3333;
-        color: #000000;
-        border: 1px solid #ff4d4d;
-        border-radius: 8px;
-        width: 100%;
-        font-weight: bold;
+        background-color: #ff3333 !important;
+        color: #000000 !important;
+        border: 1px solid #ff4d4d !important;
+        border-radius: 8px !important;
+        width: 100% !important;
+        font-weight: bold !important;
     }
     
     .stButton button:hover {
-        background-color: #e60000;
-        color: #000000;
-        border-color: #ff3333;
+        background-color: #cc0000 !important;
+        color: #ffffff !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# --- BARRA LATERAL (MENU ESTILO DASHBOARD) ---
+# --- GESTÃO DE ESTADO DO SOTAQUE/IDIOMA ---
+if "opcao_voz" not in st.session_state:
+    st.session_state.opcao_voz = "Brasileiro - Ana"
+
+# --- BARRA LATERAL (ESTILO PAINEL DEDICADO) ---
 st.sidebar.markdown("<h3 style='color: #ff3333; margin-bottom: 20px;'>⚡ Impossível</h3>", unsafe_allow_html=True)
 st.sidebar.markdown("<p style='color: #666; font-size: 12px; margin-top: -15px;'>Sua IA pessoal, para a vida.</p>", unsafe_allow_html=True)
 
 st.sidebar.markdown("---")
-st.sidebar.subheader("🌍 Idioma e Sotaque")
-opcao_voz = st.sidebar.selectbox(
-    "Escolha o estilo / idioma:",
-    [
-        "Brasileiro - Ana",
-        "Brasileiro - Gaúcho",
-        "Brasileiro - Mineiro",
-        "Brasileiro - Carioca",
-        "Italiano",
-        "Inglês",
-        "Alemão",
-        "Espanhol",
-        "Mexicano"
-    ],
-    key="select_idioma_voz"
-)
+st.sidebar.markdown("<p style='color: #fff; font-weight: 600;'>🌍 Selecione o Estilo / Sotaque:</p>", unsafe_allow_html=True)
+
+# Lista de opções de sotaques e idiomas em formato de botões escuros/vermelhos (sem fundos brancos!)
+opcoes = [
+    "Brasileiro - Ana",
+    "Brasileiro - Gaúcho",
+    "Brasileiro - Mineiro",
+    "Brasileiro - Carioca",
+    "Italiano",
+    "Inglês",
+    "Alemão",
+    "Espanhol",
+    "Mexicano"
+]
+
+for op in opcoes:
+    # Destaca visualmente a opção escolhida atualmente
+    if st.sidebar.button(f"{'▶ ' if st.session_state.opcao_voz == op else ''}{op}", key=f"btn_{op}"):
+        st.session_state.opcao_voz = op
+        st.rerun()
 
 st.sidebar.markdown("---")
-if st.sidebar.button("🧹 Limpar Histórico"):
+if st.sidebar.button("🧹 Limpar Histórico", key="btn_limpar"):
     st.session_state.messages = []
     st.rerun()
 
@@ -223,9 +198,9 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown("---")
-st.markdown("### 💬 Chat Ativo")
+st.markdown(f"### 💬 Chat Ativo <span style='font-size: 14px; color: #ff3333;'>({st.session_state.opcao_voz})</span>", unsafe_allow_html=True)
 
-# Inicializar o histórico para manter o contexto
+# Inicializar histórico
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -239,7 +214,9 @@ if prompt := st.chat_input("Digite a sua mensagem para a Impossível..."):
         st.markdown(prompt)
 
     prompt_lower = prompt.lower().strip()
+    opcao_voz = st.session_state.opcao_voz
     
+    # Lógica de respostas diretas e naturais
     if "Gaúcho" in opcao_voz:
         lang_code = 'pt'
         if any(w in prompt_lower for w in ["oi", "olá", "tudo bem", "como vai"]):
@@ -321,4 +298,3 @@ if prompt := st.chat_input("Digite a sua mensagem para a Impossível..."):
                 st.audio(ficheiro_audio, format="audio/mp3")
         except:
             pass
- 
