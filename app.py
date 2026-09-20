@@ -12,13 +12,13 @@ st.markdown("""
     
     [data-testid="stSidebar"] {
         background-color: #121212 !important;
-        border-right: 1px solid #1a1a1a;
+        border-right: 1px solid #1f1f1f;
     }
     
     .stChatInputContainer input {
         background-color: #141414 !important;
         color: #ffffff !important;
-        border: 1px solid #ff2a2a !important;
+        border: 1px solid #ff3333 !important;
         border-radius: 16px !important;
         padding: 14px 20px !important;
     }
@@ -27,29 +27,30 @@ st.markdown("""
         color: #666666 !important;
     }
 
-    /* Caixa das Mensagens com Fundo Claro e Letras Pretas */
+    /* Caixa das Mensagens com fundo claro e texto preto */
     .stChatMessage {
-        background-color: #f0f0f0 !important;
-        border: 1px solid #dcdcdc !important;
+        background-color: #f2f2f2 !important;
+        border: 1px solid #d5d5d5 !important;
         border-radius: 14px !important;
         color: #000000 !important;
-        margin-bottom: 10px;
+        margin-bottom: 12px;
     }
     
     .stChatMessage p, .stChatMessage div, .stChatMessage span {
         color: #000000 !important;
     }
 
+    /* Hero Banner com Gradiente Vermelho/Laranja */
     .hero-container {
-        background: radial-gradient(circle at 70% 30%, rgba(255, 42, 42, 0.12) 0%, rgba(11, 11, 11, 0) 70%);
-        border: 1px solid #1c1c1c;
+        background: radial-gradient(circle at 75% 20%, rgba(255, 51, 51, 0.25) 0%, rgba(255, 102, 0, 0.1) 40%, rgba(11, 11, 11, 0) 70%);
+        border: 1px solid #221212;
         border-radius: 20px;
         padding: 35px;
         margin-bottom: 25px;
     }
     
     .brand-subtitle {
-        color: #ff2a2a;
+        color: #ff3333;
         font-size: 11px;
         font-weight: 700;
         text-transform: uppercase;
@@ -65,7 +66,7 @@ st.markdown("""
     }
     
     .hero-title span {
-        color: #ff2a2a;
+        color: #ff3333;
     }
     
     .hero-desc {
@@ -90,19 +91,19 @@ st.markdown("""
     
     .action-card {
         background-color: #141414;
-        border: 1px solid #1c1c1c;
+        border: 1px solid #221212;
         border-radius: 14px;
         padding: 16px;
         transition: all 0.2s ease-in-out;
     }
     
     .action-card:hover {
-        border-color: #ff2a2a;
-        background-color: #181414;
+        border-color: #ff3333;
+        background-color: #1a1212;
     }
     
     .card-icon {
-        color: #ff2a2a;
+        color: #ff3333;
         font-size: 16px;
         margin-bottom: 8px;
     }
@@ -121,7 +122,7 @@ st.markdown("""
     }
     
     .stButton button {
-        background-color: #ff2a2a !important;
+        background-color: #ff3333 !important;
         color: #000000 !important;
         border: none !important;
         border-radius: 10px !important;
