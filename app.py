@@ -9,7 +9,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- ESTILO VISUAL COM CHAT PRETO E LETRAS BRANCAS ---
+# --- ESTILO VISUAL COM CORREÇÃO DA FAIXA BRANCA DO CHAT ---
 st.markdown("""
 <style>
     #MainMenu {visibility: hidden;}
@@ -27,9 +27,21 @@ st.markdown("""
         border-right: 1px solid #1f1f1f;
     }
     
-    /* --- CORREÇÃO DO CHAT: Fundo Preto e Letras Brancas --- */
+    /* --- REMOVER QUALQUER FUNDO BRANCO NA ZONA DO CHAT --- */
     
-    /* Caixa de texto onde o utilizador escreve (Input) */
+    /* Força o contentor da barra de chat a ficar totalmente preto */
+    div[data-testid="stChatInputContainer"] {
+        background-color: #0b0b0b !important;
+        border-top: 1px solid #1f1f1f !important;
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+    }
+    
+    div.stChatFloatingInputContainer {
+        background-color: #0b0b0b !important;
+    }
+
+    /* Caixa de texto onde o utilizador escreve (Input) com fundo preto e borda vermelha */
     .stChatInputContainer input {
         background-color: #000000 !important;
         color: #ffffff !important;
@@ -39,14 +51,10 @@ st.markdown("""
     }
     
     .stChatInputContainer input::placeholder {
-        color: #777777 !important;
-    }
-    
-    .stChatInputContainer {
-        background-color: transparent !important;
+        color: #888888 !important;
     }
 
-    /* Mensagens do Chat (tanto do utilizador como da IA) com fundo preto e texto branco */
+    /* Mensagens do Chat com fundo escuro e texto branco */
     .stChatMessage {
         background-color: #141414 !important;
         border: 1px solid #1f1f1f !important;
@@ -54,7 +62,6 @@ st.markdown("""
         color: #ffffff !important;
     }
     
-    /* Garantir que todo o texto dentro das mensagens do chat seja branco */
     .stChatMessage p, .stChatMessage div, .stChatMessage span {
         color: #ffffff !important;
     }
