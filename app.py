@@ -9,7 +9,6 @@ st.title("🤖 IA Impossível - O teu Assistente")
 
 # --- MENU DE DEFINIÇÕES NA BARRA LATERAL ---
 st.sidebar.title("⚙️ Definições da IA")
-nome_ia = st.sidebar.text_input("Nome da IA", value="Impossível")
 
 st.sidebar.markdown("---")
 st.sidebar.subheader("🎙️ Seleção de Sotaque / Voz")
