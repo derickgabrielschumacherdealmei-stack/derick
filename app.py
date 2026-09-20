@@ -9,7 +9,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- ESTILO CSS + JAVASCRIPT DE FORÇAGEM ABSOLUTA ---
+# --- ESTILO VISUAL OTIMIZADO ---
 st.markdown("""
 <style>
     #MainMenu {visibility: hidden;}
@@ -115,7 +115,6 @@ st.markdown("""
 </style>
 
 <script>
-    // Força o fundo escuro via JavaScript em todos os elementos problemáticos assim que carregar
     function forcarEscuro() {
         const elementos = document.querySelectorAll('[data-testid="stAppViewContainer"], section.main, .block-container, [data-testid="stChatInputContainer"], footer');
         elementos.forEach(el => {
@@ -299,3 +298,5 @@ if prompt := st.chat_input("Digite a sua mensagem para a Impossível..."):
             tts.save(ficheiro_audio)
             if os.path.exists(ficheiro_audio):
                 st.audio(ficheiro_audio, format="audio/mp3")
+        except Exception:
+            pass
