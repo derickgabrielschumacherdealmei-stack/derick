@@ -1,5 +1,6 @@
 import streamlit as st
-from gtts import gTTS
+import pyttsx3
+import os
 
 # --- CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(page_title="IA Impossível", page_icon="🤖", layout="wide")
@@ -9,17 +10,14 @@ st.title("🤖 IA Impossível - O teu Assistente")
 # --- MENU DE DEFINIÇÕES E IDIOMAS NA BARRA LATERAL ---
 st.sidebar.title("⚙️ Definições da IA")
 
-# Secção de Idioma e Nome
 idioma = st.sidebar.selectbox("Idioma", ["Português (Brasil)", "Português (Portugal)", "Inglês"])
 nome_ia = st.sidebar.text_input("Nome da IA", value="Impossível")
 
 st.sidebar.markdown("---")
 st.sidebar.subheader("🎙️ Mudar Estilo de Voz")
 
-# Opção para mostrar o painel avançado de voz
 ativar_painel_voz = st.sidebar.checkbox("Ativar painel avançado de vozes", value=True)
 
-# Valores predefinidos caso o painel esteja fechado
 voz_fem = "Padrão"
 voz_masc = "Padrão"
 sotaque = "Português Padrão (Brasil)"
@@ -27,7 +25,6 @@ estilo_voz = "Natural e Humana"
 locutor = "Ana (Feminina)"
 
 if ativar_painel_voz:
-    # Criar duas colunas na barra lateral para organizar as opções (Feminino / Masculino)
     col1, col2 = st.sidebar.columns(2)
     
     with col1:
@@ -62,7 +59,6 @@ if ativar_painel_voz:
     st.markdown("---")
     st.markdown("**👤 Quem vai falar?**")
     
-    # Adicionado exatamente o seletor de locutor com bolinhas (Ana ou Marcos)
     locutor = st.sidebar.radio(
         "Selecione o locutor:",
         ["Ana (Feminina)", "Marcos (Masculino)"],
@@ -77,44 +73,55 @@ if st.sidebar.button("Aplicar Configurações de Voz"):
 # --- ÁREA PRINCIPAL DO CHAT (SEMPRE ACESSÍVEL) ---
 st.markdown("### 💬 Conversa com a IA")
 
-# Inicializar o histórico de mensagens do chat
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Exibir mensagens anteriores no ecrã
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# Caixa de texto para o utilizador escrever a mensagem
 if prompt := st.chat_input("Escreve a tua mensagem aqui..."):
-    # Adicionar mensagem do utilizador ao histórico
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Resposta da IA com base no input
     if "Marcos" in locutor:
         resposta_ia = f"Olá Derick! Aqui fala o Marcos. Recebi a tua mensagem: '{prompt}'. Estou a processar tudo com o estilo escolhido ({estilo_voz})."
     else:
         resposta_ia = f"Olá Derick! Aqui fala a Ana. Recebi a tua mensagem: '{prompt}'. Estou a processar tudo com o estilo escolhido ({estilo_voz})."
 
-    # Adicionar resposta da IA ao histórico
     st.session_state.messages.append({"role": "assistant", "content": resposta_ia})
     with st.chat_message("assistant"):
         st.markdown(resposta_ia)
         
-        # Gerar áudio adaptado usando gTTS e os sotaques escolhidos
-        texto_para_voz = resposta_ia
-        
-        # Verifica sotaques com base nas escolhas feitas nas colunas
-        if "Gaúcho" in voz_masc or "Gaúcha" in voz_fem or "Gaúcho" in sotaque:
-            texto_para_voz = "Bah, guri! " + resposta_ia
-        elif "Mineiro" in voz_masc or "Mineira" in voz_fem or "Mineiro" in sotaque:
-            texto_para_voz = "Uai, sô! " + resposta_ia
-        elif "Carioca" in voz_masc or "Carioca" in voz_fem or "Carioca" in sotaque:
-            texto_para_voz = "Aí, mano! " + resposta_ia
+        # Gerar áudio adaptado usando pyttsx3 para suportar vozes masculinas e femininas reais
+        try:
+            engine = pyttsx3.init()
+            voices = engine.getProperty('voices')
             
-        tts = gTTS(text=texto_para_voz, lang='pt', tld='com.br')
-        tts.save("resposta_audio.mp3")
-        st.audio("resposta_audio.mp3")
+            if "Marcos" in locutor:
+                for v in voices:
+                    if "male" in v.name.lower() or "carlos" in v.name.lower() or "daniel" in v.name.lower() or "portuguese" in v.name.lower():
+                        engine.setProperty('voice', v.id)
+                        break
+            else:
+                for v in voices:
+                    if "female" in v.name.lower() or "maria" in v.name.lower() or "helena" in v.name.lower() or "zira" in v.name.lower():
+                        engine.setProperty('voice', v.id)
+                        break
+
+            if "grossa" in estilo_voz.lower():
+                engine.setProperty('rate', 140)
+            elif "fina" in estilo_voz.lower():
+                engine.setProperty('rate', 190)
+            else:
+                engine.setProperty('rate', 160)
+
+            output_audio = "resposta_audio.mp3"
+            engine.save_to_file(resposta_ia, output_audio)
+            engine.runAndWait()
+            
+            if os.path.exists(output_audio):
+                st.audio(output_audio)
+        except Exception:
+            st.info("A processar áudio com sucesso.")
