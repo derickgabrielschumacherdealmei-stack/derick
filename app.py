@@ -2,14 +2,14 @@ import streamlit as st
 from gtts import gTTS
 import os
 
-# --- 1. CONFIGURAÇÃO DA PÁGINA (DEVE SER SEMPRE A PRIMEIRA COISA) ---
+# --- 1. CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(
     page_title="Impossível - IA Sem Limites", 
     page_icon="🔥", 
     layout="wide"
 )
 
-# --- 2. ESTILO VISUAL (DARK THEME + VERMELHO/LARANJA NEON + TEXTO DO CHAT PRETO) ---
+# --- 2. ESTILO VISUAL (APENAS LETRAS PRETAS NAS MENSAGENS, O RESTO MANTÉM-SE IGUAL) ---
 st.markdown("""
 <style>
     #MainMenu {visibility: hidden;}
@@ -39,16 +39,8 @@ st.markdown("""
         color: #666666 !important;
     }
 
-    /* Caixa das Mensagens com fundo claro e texto preto para legibilidade perfeita */
-    .stChatMessage {
-        background-color: #f2f2f2 !important;
-        border: 1px solid #d5d5d5 !important;
-        border-radius: 14px !important;
-        color: #000000 !important;
-        margin-bottom: 12px;
-    }
-    
-    .stChatMessage p, .stChatMessage div, .stChatMessage span {
+    /* Força APENAS as letras do chat para preto */
+    .stChatMessage, .stChatMessage p, .stChatMessage div, .stChatMessage span, .stChatMessage markdown {
         color: #000000 !important;
     }
 
