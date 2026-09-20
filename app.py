@@ -9,7 +9,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- ESTILO VISUAL COM CORREÇÃO DA FAIXA BRANCA DO CHAT ---
+# --- ESTILO VISUAL COM CORREÇÃO TOTAL DA FAIXA BRANCA DO CHAT ---
 st.markdown("""
 <style>
     #MainMenu {visibility: hidden;}
@@ -27,21 +27,22 @@ st.markdown("""
         border-right: 1px solid #1f1f1f;
     }
     
-    /* --- REMOVER QUALQUER FUNDO BRANCO NA ZONA DO CHAT --- */
+    /* --- ELIMINAR COMPLETAMENTE O BRANCO DO CHAT INPUT --- */
     
-    /* Força o contentor da barra de chat a ficar totalmente preto */
-    div[data-testid="stChatInputContainer"] {
-        background-color: #0b0b0b !important;
-        border-top: 1px solid #1f1f1f !important;
-        padding-top: 10px !important;
-        padding-bottom: 10px !important;
-    }
-    
-    div.stChatFloatingInputContainer {
+    /* Força o bloco de fundo inteiro do chat input a ficar preto */
+    [data-testid="stChatInputContainer"], 
+    div.stChatFloatingInputContainer,
+    .stChatFloatingInputContainer,
+    div[class*="stChatInputContainer"] {
         background-color: #0b0b0b !important;
     }
 
-    /* Caixa de texto onde o utilizador escreve (Input) com fundo preto e borda vermelha */
+    /* Remove fundos brancos de blocos envolventes do input */
+    div.block-container div[data-testid="stVerticalBlock"] div:has(> div[data-testid="stChatInputContainer"]) {
+        background-color: #0b0b0b !important;
+    }
+
+    /* Caixa de texto onde o utilizador escreve */
     .stChatInputContainer input {
         background-color: #000000 !important;
         color: #ffffff !important;
@@ -292,7 +293,7 @@ if prompt := st.chat_input("Digite a sua mensagem para a Impossível..."):
     elif "Mexicano" in opcao_voz:
         lang_code = 'es'
         if any(w in prompt_lower for w in ["hola", "qué tal"]):
-            resposta_ia = "¡Qué onda, güey! ¿Cómo andas? ¿En qué te puedo ayudar?"
+            resposta_ia = "¡Qué onda, güey! ¿Cómo andas? ¿En qué te puedo ajudar?"
         else:
             resposta_ia = f"Sobre '{prompt}', ¡a darle con todo para resolverlo!"
         
