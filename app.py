@@ -1,6 +1,5 @@
 import streamlit as st
-import pyttsx3
-import os
+from gtts import gTTS
 
 # --- CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(page_title="IA Impossível", page_icon="🤖", layout="wide")
@@ -71,7 +70,7 @@ if st.sidebar.button("Aplicar Configurações de Voz"):
 
 
 # --- ÁREA PRINCIPAL DO CHAT (SEMPRE ACESSÍVEL) ---
-st.markdown("### 💬 Conversa com a IA")
+st.markdown("### 💬 Conversa com la IA")
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -85,43 +84,27 @@ if prompt := st.chat_input("Escreve a tua mensagem aqui..."):
     with st.chat_message("user"):
         st.markdown(prompt)
 
+    # Resposta baseada no locutor escolhido
     if "Marcos" in locutor:
-        resposta_ia = f"Olá Derick! Aqui fala o Marcos. Recebi a tua mensagem: '{prompt}'. Estou a processar tudo com o estilo escolhido ({estilo_voz})."
+        resposta_ia = f"E aí, Derick! Aqui fala o Marcos. Recebi a tua mensagem: '{prompt}'. Estou a tratar disto com o estilo {estilo_voz}."
     else:
-        resposta_ia = f"Olá Derick! Aqui fala a Ana. Recebi a tua mensagem: '{prompt}'. Estou a processar tudo com o estilo escolhido ({estilo_voz})."
+        resposta_ia = f"Olá Derick! Aqui fala a Ana. Recebi a tua mensagem: '{prompt}'. Estou a tratar disto com o estilo {estilo_voz}."
 
     st.session_state.messages.append({"role": "assistant", "content": resposta_ia})
     with st.chat_message("assistant"):
         st.markdown(resposta_ia)
         
-        # Gerar áudio adaptado usando pyttsx3 para suportar vozes masculinas e femininas reais
-        try:
-            engine = pyttsx3.init()
-            voices = engine.getProperty('voices')
+        # Gerar áudio com gTTS de forma super estável
+        texto_para_voz = resposta_ia
+        
+        # Aplicar sotaques se selecionados
+        if "Gaúcho" in voz_masc or "Gaúcha" in voz_fem or "Gaúcho" in sotaque:
+            texto_para_voz = "Bah, guri! " + resposta_ia
+        elif "Mineiro" in voz_masc or "Mineira" in voz_fem or "Mineiro" in sotaque:
+            texto_para_voz = "Uai, sô! " + resposta_ia
+        elif "Carioca" in voz_masc or "Carioca" in voz_fem or "Carioca" in sotaque:
+            texto_para_voz = "Aí, mano! " + resposta_ia
             
-            if "Marcos" in locutor:
-                for v in voices:
-                    if "male" in v.name.lower() or "carlos" in v.name.lower() or "daniel" in v.name.lower() or "portuguese" in v.name.lower():
-                        engine.setProperty('voice', v.id)
-                        break
-            else:
-                for v in voices:
-                    if "female" in v.name.lower() or "maria" in v.name.lower() or "helena" in v.name.lower() or "zira" in v.name.lower():
-                        engine.setProperty('voice', v.id)
-                        break
-
-            if "grossa" in estilo_voz.lower():
-                engine.setProperty('rate', 140)
-            elif "fina" in estilo_voz.lower():
-                engine.setProperty('rate', 190)
-            else:
-                engine.setProperty('rate', 160)
-
-            output_audio = "resposta_audio.mp3"
-            engine.save_to_file(resposta_ia, output_audio)
-            engine.runAndWait()
-            
-            if os.path.exists(output_audio):
-                st.audio(output_audio)
-        except Exception:
-            st.info("A processar áudio com sucesso.")
+        tts = gTTS(text=texto_para_voz, lang='pt', tld='com.br')
+        tts.save("resposta_audio.mp3")
+        st.audio("resposta_audio.mp3")
